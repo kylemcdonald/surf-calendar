@@ -5,7 +5,7 @@ const { chromium } = require("playwright");
 
 const baseUrl = process.env.SURF_ATLAS_URL || "http://localhost:3001/";
 const outputDirectory = "test-results";
-const markerMinSeparationPx = 16;
+const markerOverlapThresholdPx = 5.5;
 const monthNames = [
   "Jan",
   "Feb",
@@ -54,7 +54,7 @@ function assertOverlapOnlyLayout(markers) {
         Math.hypot(
           marker.trueX - candidate.trueX,
           marker.trueY - candidate.trueY,
-        ) < markerMinSeparationPx,
+        ) < markerOverlapThresholdPx,
     );
     const hasOffset = Math.hypot(marker.offsetX, marker.offsetY) >= 0.5;
 
@@ -138,9 +138,15 @@ async function run() {
   assert.equal(
     await page
       .getByTestId("world-map")
-      .getAttribute("data-marker-separation-px"),
-    "16",
+      .getAttribute("data-marker-overlap-threshold-px"),
+    "5.5",
   );
+  const markerDotBounds = await page
+    .locator(".map-marker-dot")
+    .first()
+    .boundingBox();
+  assert.ok(markerDotBounds);
+  assert.equal(markerOverlapThresholdPx, markerDotBounds.width * 0.5);
   await page.waitForFunction(() =>
     [...document.querySelectorAll(".map-marker")].some(
       (marker) => marker.getAttribute("data-displaced") === "true",

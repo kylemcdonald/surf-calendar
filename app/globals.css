@@ -9,11 +9,11 @@
   --line-strong: #94a9a3;
   --ocean: #b8dbd7;
   --land: #e7eee4;
-  --deep-sea: #075961;
-  --sea: #2f8f8a;
-  --sea-light: #88c8bf;
-  --sea-pale: #cadfda;
-  --mist: #e5e5dc;
+  --deep-sea: hsl(210 66% 32%);
+  --sea: hsl(210 62% 52%);
+  --sea-light: hsl(210 60% 70%);
+  --sea-pale: hsl(210 67% 85%);
+  --mist: hsl(210 18% 91%);
   --coral: #f26f52;
   --coral-dark: #bd4734;
   --lime: #bfd955;
@@ -407,12 +407,12 @@ main {
 
 .rating-2 {
   background: var(--sea-pale);
-  color: #31595a;
+  color: #365b7a;
 }
 
 .rating-3 {
   background: var(--sea-light);
-  color: #113b3e;
+  color: #173d61;
 }
 
 .rating-4 {

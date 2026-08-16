@@ -37,7 +37,7 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /data-testid="world-map"/);
   assert.match(html, /data-map-system="maplibre-web-mercator"/);
   assert.match(html, /data-basemap="openmaptiles-osm-bright"/);
-  assert.match(html, /data-marker-separation-px="16"/);
+  assert.match(html, /data-marker-overlap-threshold-px="5\.5"/);
   assert.match(html, /class="maplibre-map"/);
   assert.match(html, /class="map-attribution"/);
   assert.match(html, /© OpenMapTiles/);
@@ -60,8 +60,9 @@ test("server-renders the complete surf atlas", async () => {
 });
 
 test("ships product data and removes starter preview infrastructure", async () => {
-  const [page, layout, packageJson, surfAtlas, surfData, worldMap] =
+  const [globals, page, layout, packageJson, surfAtlas, surfData, worldMap] =
     await Promise.all([
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -76,9 +77,11 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.match(surfAtlas, /www\.google\.com\/maps\/search/);
   assert.doesNotMatch(surfAtlas, /getSource|Regional source/);
+  assert.match(globals, /--sea-pale: hsl\(210 67% 85%\)/);
+  assert.doesNotMatch(globals, /#075961|#2f8f8a|#88c8bf|#cadfda/);
   assert.match(worldMap, /osm-bright-gl-style\/style-cdn\.json/);
   assert.match(worldMap, /tiles\.openfreemap\.org\/planet/);
-  assert.match(worldMap, /MARKER_MIN_SEPARATION_PX/);
+  assert.match(worldMap, /MARKER_OVERLAP_THRESHOLD_PX/);
   assert.match(worldMap, /map\.project/);
   assert.match(worldMap, /attributionControl: false/);
   assert.doesNotMatch(

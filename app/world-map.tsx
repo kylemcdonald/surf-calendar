@@ -16,7 +16,10 @@ const OSM_BRIGHT_STYLE_URL =
   "https://openmaptiles.github.io/osm-bright-gl-style/style-cdn.json";
 const OPENFREEMAP_TILEJSON_URL = "https://tiles.openfreemap.org/planet";
 const OPENFREEMAP_FONT_ROOT = "https://tiles.openfreemap.org/fonts/";
-export const MARKER_MIN_SEPARATION_PX = 16;
+const MARKER_DOT_DIAMETER_PX = 11;
+// Keep true coordinates until dots overlap by half their visible diameter.
+export const MARKER_OVERLAP_THRESHOLD_PX = MARKER_DOT_DIAMETER_PX * 0.5;
+const MARKER_DISPLAY_SEPARATION_PX = 14;
 
 type MapLibreApi = (typeof import("./load-maplibre"))["default"];
 
@@ -114,7 +117,7 @@ export function applyMarkerCollisionLayout(
       const secondPoint = projectedPoints[secondIndex];
       if (
         Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y) <
-        MARKER_MIN_SEPARATION_PX
+        MARKER_OVERLAP_THRESHOLD_PX
       ) {
         join(firstIndex, secondIndex);
       }
@@ -144,8 +147,8 @@ export function applyMarkerCollisionLayout(
       { x: 0, y: 0 },
     );
     const radius = Math.max(
-      10,
-      MARKER_MIN_SEPARATION_PX /
+      8,
+      MARKER_DISPLAY_SEPARATION_PX /
         (2 * Math.sin(Math.PI / indices.length)) +
         1,
     );
@@ -346,7 +349,7 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
       data-basemap="openmaptiles-osm-bright"
       data-map-ready={mapReady}
       data-map-system="maplibre-web-mercator"
-      data-marker-separation-px={MARKER_MIN_SEPARATION_PX}
+      data-marker-overlap-threshold-px={MARKER_OVERLAP_THRESHOLD_PX}
       data-testid="world-map"
       data-zoom={mapZoom.toFixed(3)}
     >
