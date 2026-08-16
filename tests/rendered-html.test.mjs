@@ -50,6 +50,7 @@ test("server-renders the complete surf atlas", async () => {
   assert.equal((html.match(/class="is-current-month"/g) ?? []).length, 1);
   assert.doesNotMatch(html, /data-testid="spot-detail"/);
   assert.doesNotMatch(html, /mini-season|month-score|detail-month/);
+  assert.doesNotMatch(html, /<button[^>]*class="season-cell/);
   assert.doesNotMatch(html, /class="season-cell[^"]*"[^>]*>[1-5]<\/button>/);
   assert.doesNotMatch(
     html,
@@ -75,7 +76,10 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.doesNotMatch(page, /codex-preview|_sites-preview|SkeletonPreview/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.match(surfAtlas, /www\.google\.com\/maps\/search/);
-  assert.doesNotMatch(surfAtlas, /getSource|Regional source/);
+  assert.doesNotMatch(
+    surfAtlas,
+    /getSource|Regional source|selectedMonthIndex|is-selected-cell/,
+  );
   assert.match(globals, /--sea-pale: hsl\(210 67% 85%\)/);
   assert.doesNotMatch(globals, /#075961|#2f8f8a|#88c8bf|#cadfda/);
   assert.match(worldMap, /osm-bright-gl-style\/style-cdn\.json/);

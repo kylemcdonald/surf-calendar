@@ -29,9 +29,6 @@ const CURRENT_MONTH_INDEX = new Date().getMonth();
 
 export default function SurfAtlas() {
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState<number | null>(
-    null,
-  );
   const [activeLevel, setActiveLevel] = useState<Level | null>(null);
   const detailRef = useRef<HTMLElement>(null);
 
@@ -62,9 +59,8 @@ export default function SurfAtlas() {
     [visibleSpots],
   );
 
-  function selectSpot(spotId: string, monthIndex?: number) {
+  function selectSpot(spotId: string) {
     setSelectedSpotId(spotId);
-    setSelectedMonthIndex(monthIndex ?? null);
 
     if (window.matchMedia("(max-width: 1279px)").matches) {
       window.requestAnimationFrame(() => {
@@ -82,7 +78,6 @@ export default function SurfAtlas() {
 
     if (nextLevel && selectedSpot && !selectedSpot.levels.includes(nextLevel)) {
       setSelectedSpotId(null);
-      setSelectedMonthIndex(null);
     }
   }
 
@@ -165,7 +160,6 @@ export default function SurfAtlas() {
                         key={region}
                         currentMonthIndex={CURRENT_MONTH_INDEX}
                         region={region}
-                        selectedMonthIndex={selectedMonthIndex}
                         selectedSpotId={selectedSpot?.id ?? null}
                         spots={spots}
                         onSelect={selectSpot}
@@ -282,8 +276,7 @@ interface RegionRowsProps {
   region: string;
   spots: typeof SURF_SPOTS;
   selectedSpotId: string | null;
-  selectedMonthIndex: number | null;
-  onSelect: (spotId: string, monthIndex?: number) => void;
+  onSelect: (spotId: string) => void;
 }
 
 function RegionRows({
@@ -291,7 +284,6 @@ function RegionRows({
   region,
   spots,
   selectedSpotId,
-  selectedMonthIndex,
   onSelect,
 }: RegionRowsProps) {
   return (
@@ -312,6 +304,7 @@ function RegionRows({
           >
             <th className="spot-column" scope="row">
               <button
+                aria-label={`Show details for ${spot.name}, ${spot.country}`}
                 aria-pressed={selected}
                 className="spot-trigger"
                 onClick={() => onSelect(spot.id)}
@@ -342,28 +335,17 @@ function RegionRows({
                 </span>
               </button>
             </th>
-            {spot.ratings.map((rating, monthIndex) => {
-              const selectedCell =
-                selected && selectedMonthIndex === monthIndex;
-
-              return (
-                <td key={`${spot.id}-${MONTHS[monthIndex]}`}>
-                  <button
-                    aria-label={`${spot.name}, ${MONTHS[monthIndex]}: ${rating} out of 5, ${ratingLabels[rating]}`}
-                    aria-pressed={selectedCell}
-                    className={`season-cell rating-${rating}${
-                      currentMonthIndex === monthIndex
-                        ? " is-current-month-cell"
-                        : ""
-                    }${
-                      selectedCell ? " is-selected-cell" : ""
-                    }`}
-                    onClick={() => onSelect(spot.id, monthIndex)}
-                    type="button"
-                  />
-                </td>
-              );
-            })}
+            {spot.ratings.map((rating, monthIndex) => (
+              <td
+                aria-label={`${spot.name}, ${MONTHS[monthIndex]}: ${rating} out of 5, ${ratingLabels[rating]}`}
+                className={`season-cell rating-${rating}${
+                  currentMonthIndex === monthIndex
+                    ? " is-current-month-cell"
+                    : ""
+                }`}
+                key={`${spot.id}-${MONTHS[monthIndex]}`}
+              />
+            ))}
           </tr>
         );
       })}

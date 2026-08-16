@@ -113,6 +113,9 @@ async function run() {
     .waitFor({ state: "visible" });
   assert.equal(await page.locator(".map-marker").count(), 50);
   assert.equal(await page.locator(".season-cell").count(), 600);
+  assert.equal(await page.locator("td.season-cell").count(), 600);
+  assert.equal(await page.locator("button.season-cell").count(), 0);
+  assert.equal(await page.locator(".season-cell[aria-pressed]").count(), 0);
   assert.equal(await page.locator(".maplibregl-canvas").count(), 1);
   assert.equal(
     await page.getByTestId("world-map").getAttribute("data-map-system"),
@@ -204,6 +207,34 @@ async function run() {
   assert.equal(await page.locator(".is-current-month-cell").count(), 50);
 
   const firstSpotRow = page.locator("tbody tr:not(.region-row)").first();
+  const mapSectionPaddingTop = await page.locator(".map-section").evaluate(
+    (element) => Number.parseFloat(getComputedStyle(element).paddingTop),
+  );
+  assert.equal(
+    mapSectionPaddingTop >= 10,
+    true,
+    "The map should have a small amount of space above it",
+  );
+  const interfaceFontSizes = await page.evaluate(() => ({
+    filter: Number.parseFloat(
+      getComputedStyle(document.querySelector(".level-filter")).fontSize,
+    ),
+    location: Number.parseFloat(
+      getComputedStyle(document.querySelector(".spot-identity small")).fontSize,
+    ),
+    month: Number.parseFloat(
+      getComputedStyle(
+        document.querySelector(".season-matrix thead th:not(.spot-column)"),
+      ).fontSize,
+    ),
+    spot: Number.parseFloat(
+      getComputedStyle(document.querySelector(".spot-identity strong")).fontSize,
+    ),
+  }));
+  assert.equal(interfaceFontSizes.filter >= 11, true);
+  assert.equal(interfaceFontSizes.location >= 10, true);
+  assert.equal(interfaceFontSizes.month >= 10, true);
+  assert.equal(interfaceFontSizes.spot >= 14, true);
   const lastLevelPillBounds = await firstSpotRow
     .locator(".row-levels i")
     .last()
@@ -360,7 +391,7 @@ async function run() {
   });
 
   await page
-    .getByRole("button", { name: "Zicatela, May: 5 out of 5, Very good" })
+    .getByRole("button", { name: "Show details for Zicatela, Mexico" })
     .click();
   const zicatelaDetail = page.getByTestId("spot-detail");
   assert.equal(
@@ -377,6 +408,24 @@ async function run() {
     0,
   );
   assert.equal(await zicatelaDetail.getByText(/^[1-5]\/5$/).count(), 0);
+  const detailFontSizes = await zicatelaDetail.evaluate((detail) => ({
+    fact: Number.parseFloat(
+      getComputedStyle(detail.querySelector(".break-facts dd")).fontSize,
+    ),
+    kicker: Number.parseFloat(
+      getComputedStyle(detail.querySelector(".detail-kicker")).fontSize,
+    ),
+    note: Number.parseFloat(
+      getComputedStyle(detail.querySelector(".detail-notes p")).fontSize,
+    ),
+    summary: Number.parseFloat(
+      getComputedStyle(detail.querySelector(".detail-summary")).fontSize,
+    ),
+  }));
+  assert.equal(detailFontSizes.fact >= 13, true);
+  assert.equal(detailFontSizes.kicker >= 10, true);
+  assert.equal(detailFontSizes.note >= 13, true);
+  assert.equal(detailFontSizes.summary >= 16, true);
   const zicatelaMapsLink = zicatelaDetail.getByRole("link", {
     name: "Open Zicatela in Google Maps",
   });
@@ -387,10 +436,9 @@ async function run() {
   assert.equal(zicatelaMapsUrl.searchParams.get("query"), "15.85,-97.056");
   assert.equal(await zicatelaMapsLink.getAttribute("target"), "_blank");
 
-  assert.equal(
-    await page.locator(".is-selected-cell").getAttribute("aria-label"),
-    "Zicatela, May: 5 out of 5, Very good",
-  );
+  assert.equal(await page.locator(".is-selected-row").count(), 1);
+  assert.match(await page.locator(".is-selected-row").innerText(), /Zicatela/);
+  assert.equal(await page.locator(".is-selected-cell").count(), 0);
 
   await page.getByRole("button", { name: "Select Cloudbreak, Fiji" }).click();
   assert.equal(
@@ -466,7 +514,9 @@ async function run() {
   });
 
   await page
-    .getByRole("button", { name: "Arugam Bay, Jul: 5 out of 5, Very good" })
+    .getByRole("button", {
+      name: "Show details for Arugam Bay, Sri Lanka",
+    })
     .click();
   await page.waitForTimeout(500);
   assert.equal(

@@ -117,8 +117,8 @@ main {
   flex-wrap: wrap;
   gap: 14px 28px;
   justify-content: space-between;
-  min-height: 49px;
-  padding-block: 9px;
+  min-height: 56px;
+  padding-block: 11px;
 }
 
 .key-group {
@@ -131,7 +131,7 @@ main {
 .key-title {
   color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin-right: 3px;
@@ -142,7 +142,7 @@ main {
 .level-filter {
   align-items: center;
   display: inline-flex;
-  font-size: 10px;
+  font-size: 11px;
   gap: 5px;
 }
 
@@ -153,7 +153,7 @@ main {
   color: var(--ink-soft);
   cursor: pointer;
   font-weight: 650;
-  padding: 5px 8px;
+  padding: 6px 9px;
   transition:
     background 140ms ease,
     border-color 140ms ease,
@@ -178,13 +178,13 @@ main {
 .level-dot {
   border-radius: 50%;
   display: inline-block;
-  height: 10px;
-  width: 10px;
+  height: 11px;
+  width: 11px;
 }
 
 .level-dot {
-  height: 7px;
-  width: 7px;
+  height: 8px;
+  width: 8px;
 }
 
 .level-beginner {
@@ -215,7 +215,7 @@ main {
   border-collapse: separate;
   border-spacing: 0;
   font-variant-numeric: tabular-nums;
-  min-width: 900px;
+  min-width: 800px;
   table-layout: fixed;
   width: 100%;
 }
@@ -225,9 +225,9 @@ main {
   border-bottom: 1px solid var(--line-strong);
   color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  height: 43px;
+  height: 44px;
   letter-spacing: 0.06em;
   padding: 0;
   position: sticky;
@@ -237,7 +237,7 @@ main {
 }
 
 .season-matrix thead th:not(.spot-column) {
-  width: 48px;
+  width: 40px;
 }
 
 .season-matrix thead th.is-current-month {
@@ -250,17 +250,17 @@ main {
 
 .season-matrix .spot-column {
   left: 0;
-  padding-right: 12px;
+  padding-right: 14px;
   position: sticky;
   text-align: left;
-  width: 292px;
+  width: 320px;
   z-index: 6;
 }
 
 .season-matrix tbody tr:not(.region-row) th,
 .season-matrix tbody tr:not(.region-row) td {
   border-bottom: 1px solid var(--line);
-  height: 54px;
+  height: 52px;
   padding: 0;
 }
 
@@ -276,11 +276,11 @@ main {
   background: var(--ink);
   color: var(--paper);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  height: 30px;
+  height: 32px;
   letter-spacing: 0.12em;
-  padding: 0 10px;
+  padding: 0 12px;
   text-align: left;
   text-transform: uppercase;
 }
@@ -293,7 +293,7 @@ main {
   cursor: pointer;
   display: grid;
   gap: 10px;
-  grid-template-columns: 26px minmax(0, 1fr) auto;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
   height: 100%;
   padding: 6px 0;
   text-align: left;
@@ -308,7 +308,7 @@ main {
 .spot-number {
   color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .spot-identity {
@@ -325,7 +325,7 @@ main {
 }
 
 .spot-identity strong {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 680;
   letter-spacing: -0.015em;
   transition: color 160ms ease;
@@ -333,15 +333,15 @@ main {
 
 .spot-identity small {
   color: var(--ink-soft);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.45;
   margin-top: 2px;
 }
 
 .row-levels {
   display: flex;
-  gap: 3px;
-  padding-right: 10px;
+  gap: 4px;
+  padding-right: 12px;
 }
 
 .row-levels i {
@@ -350,39 +350,18 @@ main {
   color: var(--paper);
   display: flex;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
+  font-size: 8px;
   font-style: normal;
   font-weight: 800;
-  height: 16px;
+  height: 20px;
   justify-content: center;
-  width: 16px;
+  width: 20px;
 }
 
 .season-cell {
-  border: 0;
   border-left: 1px solid rgba(251, 250, 245, 0.42);
-  color: inherit;
-  cursor: pointer;
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
-  font-weight: 750;
-  height: 53px;
+  height: 51px;
   position: relative;
-  transition:
-    filter 140ms ease,
-    transform 140ms ease;
-  width: 100%;
-}
-
-.season-cell:hover {
-  filter: saturate(1.25) brightness(0.96);
-  transform: scale(0.9);
-  z-index: 2;
-}
-
-.season-cell.is-selected-cell {
-  box-shadow: inset 0 0 0 3px var(--coral);
-  z-index: 3;
 }
 
 .season-cell.is-current-month-cell {
@@ -393,10 +372,6 @@ main {
   box-shadow:
     inset 1px 0 rgba(189, 71, 52, 0.28),
     inset -1px 0 rgba(189, 71, 52, 0.28);
-}
-
-.season-cell.is-current-month-cell.is-selected-cell {
-  box-shadow: inset 0 0 0 3px var(--coral);
 }
 
 .rating-1 {
@@ -424,6 +399,27 @@ main {
   color: var(--paper);
 }
 
+.season-matrix tbody tr.is-selected-row .spot-column {
+  box-shadow:
+    inset 3px 0 var(--coral),
+    inset 0 2px var(--coral),
+    inset 0 -2px var(--coral);
+}
+
+.season-matrix tbody tr.is-selected-row .season-cell {
+  box-shadow:
+    inset 0 2px var(--coral),
+    inset 0 -2px var(--coral);
+  filter: saturate(1.08);
+}
+
+.season-matrix tbody tr.is-selected-row .season-cell:last-child {
+  box-shadow:
+    inset -2px 0 var(--coral),
+    inset 0 2px var(--coral),
+    inset 0 -2px var(--coral);
+}
+
 .atlas-sidebar {
   min-width: 0;
 }
@@ -435,6 +431,7 @@ main {
 
 .map-section {
   margin-bottom: 26px;
+  padding-top: 12px;
 }
 
 .world-map {
@@ -548,7 +545,7 @@ main {
   bottom: 5px;
   color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
+  font-size: 8px;
   line-height: 1.35;
   padding: 2px 4px;
   position: absolute;
@@ -572,7 +569,7 @@ main {
   display: flex;
   flex-direction: column;
   max-width: calc(100% - 24px);
-  padding: 9px 11px;
+  padding: 10px 12px;
   pointer-events: none;
   position: absolute;
   right: 12px;
@@ -581,7 +578,7 @@ main {
 }
 
 .map-hover-card strong {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 680;
 }
 
@@ -589,7 +586,7 @@ main {
 .map-hover-card small {
   color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 1.45;
 }
 
@@ -597,7 +594,7 @@ main {
   align-items: center;
   color: var(--ink-soft);
   display: flex;
-  font-size: 12px;
+  font-size: 14px;
   inset: 0;
   justify-content: center;
   padding: 24px;
@@ -619,11 +616,11 @@ main {
   color: var(--paper);
   display: flex;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 700;
   justify-content: space-between;
   letter-spacing: 0.1em;
-  padding: 10px 17px;
+  padding: 12px 20px;
   text-transform: uppercase;
 }
 
@@ -631,7 +628,7 @@ main {
 .detail-summary,
 .break-facts,
 .detail-notes {
-  margin-inline: 18px;
+  margin-inline: 22px;
 }
 
 .detail-title-row {
@@ -639,11 +636,11 @@ main {
   display: flex;
   gap: 12px;
   justify-content: space-between;
-  padding-top: 18px;
+  padding-top: 22px;
 }
 
 .detail-title-row h2 {
-  font-size: clamp(25px, 2.3vw, 38px);
+  font-size: clamp(30px, 2.6vw, 42px);
   font-weight: 540;
   letter-spacing: -0.055em;
   line-height: 0.98;
@@ -652,16 +649,16 @@ main {
 
 .detail-title-row p {
   color: var(--ink-soft);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.4;
-  margin: 6px 0 0;
+  margin: 8px 0 0;
 }
 
 .level-list {
   align-items: flex-end;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .level-badge {
@@ -670,19 +667,19 @@ main {
   border-radius: 999px;
   color: var(--ink);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
+  font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.04em;
-  padding: 4px 7px;
+  padding: 5px 9px;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .detail-summary {
-  font-size: 13px;
-  line-height: 1.48;
-  margin-bottom: 16px;
-  margin-top: 15px;
+  font-size: 16px;
+  line-height: 1.55;
+  margin-bottom: 20px;
+  margin-top: 18px;
 }
 
 .break-facts {
@@ -696,7 +693,7 @@ main {
 
 .break-facts div {
   border-bottom: 1px solid var(--line);
-  padding: 11px 0;
+  padding: 14px 0;
 }
 
 .break-facts div:nth-child(odd) {
@@ -717,43 +714,43 @@ main {
 .detail-notes h3 {
   color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .break-facts dd {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 610;
   line-height: 1.35;
-  margin: 3px 0 0;
+  margin: 5px 0 0;
 }
 
 .detail-notes {
   display: grid;
-  gap: 14px;
+  gap: 18px;
   grid-template-columns: 1fr;
-  padding-block: 13px 15px;
+  padding-block: 17px 20px;
 }
 
 .detail-notes h3 {
-  margin: 0 0 5px;
+  margin: 0 0 7px;
 }
 
 .detail-notes p {
-  font-size: 9px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.55;
   margin: 0;
 }
 
 .detail-notes p + p {
-  margin-top: 6px;
+  margin-top: 9px;
 }
 
 .caution-note {
   border-left: 3px solid var(--coral);
-  padding-left: 10px;
+  padding-left: 13px;
 }
 
 .maps-link {
@@ -761,9 +758,9 @@ main {
   background: #e9eee7;
   border-top: 1px solid var(--line);
   display: flex;
-  font-size: 10px;
+  font-size: 13px;
   justify-content: space-between;
-  padding: 11px 17px;
+  padding: 14px 20px;
   text-decoration: none;
   transition: background 150ms ease;
 }
@@ -780,13 +777,13 @@ main {
 
 .maps-link small {
   color: var(--ink-soft);
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 450;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .maps-link > span:last-child {
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .sr-only {
@@ -807,11 +804,11 @@ main {
   }
 
   .season-matrix .spot-column {
-    width: 260px;
+    width: 290px;
   }
 
   .season-matrix {
-    min-width: 840px;
+    min-width: 780px;
   }
 
 }
@@ -872,15 +869,15 @@ main {
   }
 
   .season-matrix {
-    min-width: 820px;
+    min-width: 740px;
   }
 
   .season-matrix .spot-column {
-    width: 244px;
+    width: 270px;
   }
 
   .spot-identity small {
-    max-width: 154px;
+    max-width: 170px;
   }
 
   .world-map {
