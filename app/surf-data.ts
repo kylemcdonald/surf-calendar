@@ -31,9 +31,15 @@ export type SourceId =
   | "mavericks"
   | "tofino"
   | "mexico"
+  | "sayulita"
+  | "scorpion-bay"
   | "costa-rica"
+  | "nicaragua"
   | "el-salvador"
+  | "ecuador"
   | "chicama"
+  | "chile"
+  | "brazil"
   | "barbados"
   | "france"
   | "spain"
@@ -45,11 +51,19 @@ export type SourceId =
   | "jbay"
   | "skeleton-bay"
   | "bali"
+  | "g-land"
+  | "mentawais"
+  | "nias"
   | "philippines"
   | "sri-lanka"
   | "maldives"
   | "fiji"
-  | "new-zealand";
+  | "queensland"
+  | "victoria"
+  | "western-australia"
+  | "new-zealand"
+  | "raglan"
+  | "tahiti";
 
 export interface SurfSource {
   id: SourceId;
@@ -128,10 +142,28 @@ export const SOURCES: SurfSource[] = [
     url: "https://www.puerto-escondido.mx/en/2026/01/27/best-time-to-visit-puerto-escondido-your-complete-month-by-month-guide/",
   },
   {
+    id: "sayulita",
+    label: "Sayulita, Nayarit",
+    publisher: "Mexico Secretariat of Tourism",
+    url: "https://www.gob.mx/sectur/es/articulos/sayulita-nayarit",
+  },
+  {
+    id: "scorpion-bay",
+    label: "San Juanico / Scorpion Bay surf guide",
+    publisher: "Surfer",
+    url: "https://www.surfer.com/culture/san-juanico-scorpion-bay-surf-guide-baja",
+  },
+  {
     id: "costa-rica",
     label: "When to visit Costa Rica",
     publisher: "Visit Costa Rica",
     url: "https://www.visitcostarica.com/plan-your-trip/when-to-visit",
+  },
+  {
+    id: "nicaragua",
+    label: "Popoyo Beach",
+    publisher: "Visit Nicaragua",
+    url: "https://www.visitanicaragua.com/en/playa-popoyo/",
   },
   {
     id: "el-salvador",
@@ -140,10 +172,28 @@ export const SOURCES: SurfSource[] = [
     url: "https://elsalvador.travel/esp/en/punta-roca/",
   },
   {
+    id: "ecuador",
+    label: "Ecuador’s Pacific Coast",
+    publisher: "Ecuador Travel",
+    url: "https://ecuador.travel/costa-del-pacifico/",
+  },
+  {
     id: "chicama",
     label: "Chicama seasonal overview",
     publisher: "Swell Archive",
     url: "https://swellarchive.com/surf-spot-statistics/chicama/580/",
+  },
+  {
+    id: "chile",
+    label: "Punta de Lobos",
+    publisher: "Chile Travel",
+    url: "https://chile.travel/atractivos/punta-de-lobos/",
+  },
+  {
+    id: "brazil",
+    label: "Joaquina spot guide",
+    publisher: "Surfline",
+    url: "https://www.surfline.com/surf-report/joaquina/5842041f4e65fad6a7708ceb",
   },
   {
     id: "barbados",
@@ -212,6 +262,24 @@ export const SOURCES: SurfSource[] = [
     url: "https://visitbali.com/experiences/surfing-adventures",
   },
   {
+    id: "g-land",
+    label: "Surfing G-Land",
+    publisher: "Indonesia Travel",
+    url: "https://www.indonesia.travel/gb/en/destination/java/east-java/surfing-g-land",
+  },
+  {
+    id: "mentawais",
+    label: "Macaronis spot guide",
+    publisher: "Surfline",
+    url: "https://www.surfline.com/surf-report/macaronis/5842041f4e65fad6a7708d36/spot-guide",
+  },
+  {
+    id: "nias",
+    label: "Surfing Lagundri Beach",
+    publisher: "Indonesia Travel",
+    url: "https://www.indonesia.travel/gb/en/destination/sumatra/north-sumatra/surfing-lagundri-beach",
+  },
+  {
     id: "philippines",
     label: "Cloud 9 surfing",
     publisher: "Love the Philippines",
@@ -236,10 +304,40 @@ export const SOURCES: SurfSource[] = [
     url: "https://www.fiji.travel/things-to-do/surfing/beginners-guide-to-surfing-cloudbreak",
   },
   {
+    id: "queensland",
+    label: "Where to surf in Queensland",
+    publisher: "Queensland",
+    url: "https://www.queensland.com/us/en/things-to-do/adventure/surfing/surfing-endless-stoke-best-surf-spots",
+  },
+  {
+    id: "victoria",
+    label: "Surfing the Great Ocean Road",
+    publisher: "Visit Victoria",
+    url: "https://www.visitvictoria.com/Regions/Great-Ocean-Road/See-and-do/Outdoor-and-adventure/Surfing-and-windsurfing",
+  },
+  {
+    id: "western-australia",
+    label: "Margaret River surfing itinerary",
+    publisher: "Tourism Western Australia",
+    url: "https://www.westernaustralia.com/en/itinerary/surfen-in-margaret-river/5ac5fb524ee5dff84dd50340",
+  },
+  {
     id: "new-zealand",
     label: "Surfing in New Zealand",
     publisher: "100% Pure New Zealand",
     url: "https://www.newzealand.com/nz/surfing/",
+  },
+  {
+    id: "raglan",
+    label: "Raglan seasonal overview",
+    publisher: "Swell Archive",
+    url: "https://swellarchive.com/surf-spot-statistics/raglan/501/",
+  },
+  {
+    id: "tahiti",
+    label: "When to visit Tahiti",
+    publisher: "Tahiti Tourisme",
+    url: "https://www.tahititourisme.com/preparing-you-trip/when-to-visit-the-islands-of-tahiti/",
   },
 ];
 
@@ -422,7 +520,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Warm water and sunny winter weather; summer is hotter, wetter, and less reliable at the town break.",
     caution: "Crowds, rocks near the point, and water quality after heavy rain.",
     ratings: [5, 5, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5],
-    sourceId: "mexico",
+    sourceId: "sayulita",
   },
   {
     id: "zicatela",
@@ -458,7 +556,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Dry desert weather is a plus; summer can be intensely hot and tropical systems occasionally intrude.",
     caution: "Remote access, limited services, rocks, currents, and long paddles between sections.",
     ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
-    sourceId: "mexico",
+    sourceId: "scorpion-bay",
   },
   {
     id: "witchs-rock",
@@ -512,7 +610,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Warm water year-round; wet-season afternoons can turn stormy while mornings stay offshore.",
     caution: "Shallow reef, current, urchins, and an outer reef that is expert-only when large.",
     ratings: [3, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3, 3],
-    sourceId: "costa-rica",
+    sourceId: "nicaragua",
   },
   {
     id: "punta-roca",
@@ -548,7 +646,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "December–April is warmer and sunnier; June–September is cooler, cloudier, and still wave-rich.",
     caution: "Busy lineups, rocks at the point, and strong currents when swell rises.",
     ratings: [4, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 4],
-    sourceId: "el-salvador",
+    sourceId: "ecuador",
   },
   {
     id: "chicama",
@@ -584,7 +682,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Cold water all year, with wet and chilly midwinter conditions and milder shoulder seasons.",
     caution: "Rock entry, current, cold water, kelp, and major consequences when the outer peaks activate.",
     ratings: [3, 3, 4, 5, 4, 4, 4, 4, 5, 4, 3, 3],
-    sourceId: "chicama",
+    sourceId: "chile",
   },
   {
     id: "joaquina",
@@ -602,7 +700,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Winter brings stronger swell and cooler weather; fall and spring offer the friendliest compromise.",
     caution: "Rips, fast-changing sandbars, crowds, and powerful shorebreak on larger days.",
     ratings: [3, 3, 4, 5, 5, 4, 4, 4, 5, 5, 4, 3],
-    sourceId: "barbados",
+    sourceId: "brazil",
   },
   {
     id: "soup-bowl",
@@ -926,7 +1024,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Warm water, dry weather, and offshore trades align in season; access is expedition-like.",
     caution: "Shallow sharp reef, speed, current, marine life, and limited medical access.",
     ratings: [1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 4, 2],
-    sourceId: "bali",
+    sourceId: "g-land",
   },
   {
     id: "macaronis",
@@ -944,7 +1042,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Tropical heat and warm water; dry-season winds vary by local storm and island exposure.",
     caution: "Reef, remote access, boat logistics, infection risk, and crowd pressure on charter days.",
     ratings: [2, 2, 4, 5, 5, 5, 5, 5, 5, 5, 4, 2],
-    sourceId: "bali",
+    sourceId: "mentawais",
   },
   {
     id: "nias",
@@ -962,7 +1060,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Warm water all year; the drier middle months generally offer the cleanest travel window.",
     caution: "Shallow reef, powerful lip, crowds, and limited services beyond the surf village.",
     ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
-    sourceId: "bali",
+    sourceId: "nias",
   },
   {
     id: "cloud-9",
@@ -1048,11 +1146,11 @@ export const SURF_SPOTS: SurfSpot[] = [
     breakType: "Sand-bottom point",
     direction: "Long right",
     summary: "The first engine of the Superbank, capable of linking exceptionally long, high-speed rights.",
-    seasonNote: "Tropical and Tasman swell makes February–May the standout period, centered on March–April.",
+    seasonNote: "Autumn and winter are the broad target: east and southeast swell is most dependable from April–September.",
     conditions: "Warm water and subtropical weather; cyclone-season rain and wind create both opportunity and disruption.",
     caution: "One of surfing’s densest crowds, fast sweep, rock jump, and very high performance level.",
-    ratings: [3, 4, 5, 5, 5, 4, 3, 3, 3, 3, 3, 3],
-    sourceId: "fiji",
+    ratings: [3, 4, 4, 5, 5, 5, 5, 5, 5, 4, 3, 3],
+    sourceId: "queensland",
   },
   {
     id: "bells-beach",
@@ -1070,7 +1168,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Cool water, brisk winds, and fast-changing Southern Ocean weather reward full cold-water gear.",
     caution: "Rock shelves, strong current, large swell, cold exposure, and busy event periods.",
     ratings: [3, 3, 4, 5, 5, 5, 4, 4, 4, 3, 3, 3],
-    sourceId: "fiji",
+    sourceId: "victoria",
   },
   {
     id: "margaret-river",
@@ -1084,11 +1182,11 @@ export const SURF_SPOTS: SurfSpot[] = [
     breakType: "Deep-water reef break",
     direction: "Right dominant",
     summary: "A powerful, open-ocean performance wave with size, consistency, and the feel of a natural stadium.",
-    seasonNote: "April–October captures the strongest Southern Ocean swell, with winter the most consistent.",
+    seasonNote: "Winter carries the most raw swell; March–May and September–November offer the best weather-adjusted balance.",
     conditions: "Mediterranean-climate winter brings rain, cool water, and frontal winds; fall is the gentler entry.",
     caution: "Heavy water, reef, currents, isolation between breaks, and sharks.",
-    ratings: [3, 3, 4, 5, 5, 5, 5, 5, 4, 4, 3, 3],
-    sourceId: "fiji",
+    ratings: [4, 4, 5, 5, 5, 4, 4, 4, 5, 5, 5, 4],
+    sourceId: "western-australia",
   },
   {
     id: "raglan",
@@ -1106,7 +1204,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "A wetsuit is usual; winter is colder and stormier, while summer is warmer but often smaller.",
     caution: "Rock entry, strong sweep, crowds, long paddle, and rapidly changing weather.",
     ratings: [4, 4, 5, 5, 5, 4, 3, 3, 4, 4, 4, 4],
-    sourceId: "new-zealand",
+    sourceId: "raglan",
   },
   {
     id: "teahupoo",
@@ -1124,7 +1222,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     conditions: "Warm water year-round; the prime window is less humid and rain-prone than austral summer.",
     caution: "Elite-only shallow reef, extreme lip weight, boat traffic, current, and remote rescue logistics.",
     ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 2],
-    sourceId: "fiji",
+    sourceId: "tahiti",
   },
   {
     id: "cloudbreak",
