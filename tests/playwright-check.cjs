@@ -5,6 +5,57 @@ const { chromium } = require("playwright");
 
 const baseUrl = process.env.SURF_ATLAS_URL || "http://localhost:3001/";
 const outputDirectory = "test-results";
+const clusterDistanceMiles = 100;
+
+function distanceMiles(first, second) {
+  const radians = (degrees) => (degrees * Math.PI) / 180;
+  const latitudeDelta = radians(second.latitude - first.latitude);
+  const longitudeDelta = radians(second.longitude - first.longitude);
+  const firstLatitude = radians(first.latitude);
+  const secondLatitude = radians(second.latitude);
+  const haversine =
+    Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(firstLatitude) *
+      Math.cos(secondLatitude) *
+      Math.sin(longitudeDelta / 2) ** 2;
+
+  return 2 * 3958.7613 * Math.asin(Math.sqrt(haversine));
+}
+
+async function getMarkerPlacements(page) {
+  return page.locator(".map-marker").evaluateAll((markers) =>
+    markers.map((marker) => ({
+      clustered: marker.getAttribute("data-clustered") === "true",
+      label: marker.getAttribute("data-label"),
+      latitude: Number(marker.getAttribute("data-latitude")),
+      longitude: Number(marker.getAttribute("data-longitude")),
+      offsetX: Number(marker.getAttribute("data-offset-x")),
+      offsetY: Number(marker.getAttribute("data-offset-y")),
+    })),
+  );
+}
+
+function assertExactMarkerRule(markers) {
+  markers.forEach((marker, index) => {
+    const hasNearbyMarker = markers.some(
+      (candidate, candidateIndex) =>
+        candidateIndex !== index &&
+        distanceMiles(marker, candidate) <= clusterDistanceMiles,
+    );
+    const hasOffset = marker.offsetX !== 0 || marker.offsetY !== 0;
+
+    assert.equal(
+      marker.clustered,
+      hasNearbyMarker,
+      `${marker.label} cluster status should match the 100-mile rule`,
+    );
+    assert.equal(
+      hasOffset,
+      hasNearbyMarker,
+      `${marker.label} should be offset only when another point is within 100 miles`,
+    );
+  });
+}
 
 async function run() {
   mkdirSync(outputDirectory, { recursive: true });
@@ -21,9 +72,17 @@ async function run() {
   page.on("pageerror", (error) => consoleErrors.push(error.message));
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page
+    .locator('[data-testid="world-map"][data-map-ready="true"]')
+    .waitFor({ state: "visible" });
   assert.equal(await page.locator(".map-marker").count(), 50);
   assert.equal(await page.locator(".season-cell").count(), 600);
-  assert.equal((await page.locator(".map-country").count()) > 100, true);
+  assert.equal(await page.locator(".maplibregl-canvas").count(), 1);
+  assert.equal(
+    await page.getByTestId("world-map").getAttribute("data-cluster-distance-miles"),
+    "100",
+  );
+  assertExactMarkerRule(await getMarkerPlacements(page));
   assert.equal(await page.getByText("When every break comes alive").count(), 0);
   assert.equal(await page.getByText("50 breaks, one orbit").count(), 0);
   assert.equal(await page.getByText("How to read the atlas").count(), 0);
@@ -65,6 +124,11 @@ async function run() {
   );
 
   await page.getByRole("button", { name: "Show only Beginner breaks" }).click();
+  await page.waitForFunction(
+    () =>
+      document.querySelectorAll(".map-marker").length > 0 &&
+      document.querySelectorAll(".map-marker").length < 50,
+  );
   const beginnerMarkerCount = await page.locator(".map-marker").count();
   assert.equal(beginnerMarkerCount > 0 && beginnerMarkerCount < 50, true);
   assert.equal(
@@ -77,8 +141,12 @@ async function run() {
     ),
     ["true", "false", "false"],
   );
+  assertExactMarkerRule(await getMarkerPlacements(page));
 
   await page.getByRole("button", { name: "Show all skill levels" }).click();
+  await page.waitForFunction(
+    () => document.querySelectorAll(".map-marker").length === 50,
+  );
   assert.equal(await page.locator(".map-marker").count(), 50);
   assert.equal(await page.locator(".season-cell").count(), 600);
   assert.deepEqual(
@@ -88,15 +156,48 @@ async function run() {
     ["true", "true", "true"],
   );
 
-  await page.getByRole("button", { name: "Zoom in map" }).click();
-  assert.equal(
+  const initialZoom = Number(
     await page.getByTestId("world-map").getAttribute("data-zoom"),
-    "1.5",
   );
-  await page.getByRole("button", { name: "Reset map zoom" }).click();
+  assert.equal(Number.isFinite(initialZoom), true);
   assert.equal(
+    await page.getByRole("button", { name: "Zoom out" }).isDisabled(),
+    true,
+  );
+  await page.getByRole("button", { name: "Zoom in" }).click();
+  await page.waitForFunction(
+    (zoom) =>
+      Number(
+        document.querySelector('[data-testid="world-map"]')?.getAttribute(
+          "data-zoom",
+        ),
+      ) > zoom + 0.1,
+    initialZoom,
+  );
+  const zoomedIn = Number(
     await page.getByTestId("world-map").getAttribute("data-zoom"),
-    "1",
+  );
+  assert.equal(zoomedIn > initialZoom, true);
+  await page.getByRole("button", { name: "Zoom out" }).click();
+  await page.waitForFunction(
+    (zoom) =>
+      Math.abs(
+        Number(
+          document.querySelector('[data-testid="world-map"]')?.getAttribute(
+            "data-zoom",
+          ),
+        ) - zoom,
+      ) < 0.05,
+    initialZoom,
+  );
+  await page.waitForFunction(
+    () =>
+      document.querySelector('button[aria-label="Zoom out"]')?.disabled ===
+      true,
+  );
+  assert.equal(
+    await page.getByRole("button", { name: "Zoom out" }).isDisabled(),
+    true,
   );
 
   const desktopOverflow = await page.evaluate(
@@ -166,6 +267,9 @@ async function run() {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page
+    .locator('[data-testid="world-map"][data-map-ready="true"]')
+    .waitFor({ state: "visible" });
   const mobileOverflow = await page.evaluate(
     () =>
       document.documentElement.scrollWidth -
@@ -178,6 +282,16 @@ async function run() {
   );
   assert.equal(await page.getByTestId("world-map").isVisible(), true);
   assert.equal(await page.getByTestId("season-matrix").isVisible(), true);
+  const mobileMapBounds = await page.getByTestId("world-map").boundingBox();
+  assert.equal(
+    Boolean(
+      mobileMapBounds &&
+        mobileMapBounds.x >= 0 &&
+        mobileMapBounds.x + mobileMapBounds.width <= 390,
+    ),
+    true,
+    "The mobile map should stay inside the viewport",
+  );
 
   await page.screenshot({
     path: `${outputDirectory}/surf-atlas-mobile.png`,

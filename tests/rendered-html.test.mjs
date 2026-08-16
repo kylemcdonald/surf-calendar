@@ -34,14 +34,12 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /<title>Swell Season — Global Surf Atlas<\/title>/i);
   assert.match(html, /The world view/);
   assert.match(html, /Interactive world surf map/);
+  assert.match(html, /data-testid="world-map"/);
+  assert.match(html, /class="maplibre-map"/);
   assert.match(html, /Banzai Pipeline/);
   assert.match(html, /Cloudbreak/);
   assert.equal((html.match(/class="season-cell/g) ?? []).length, 600);
   assert.equal((html.match(/class="level-filter"/g) ?? []).length, 3);
-  assert.equal(
-    (html.match(/class="map-marker(?: is-selected)?"/g) ?? []).length,
-    50,
-  );
   assert.doesNotMatch(html, /class="season-cell[^"]*"[^>]*>[1-5]<\/button>/);
   assert.doesNotMatch(
     html,
