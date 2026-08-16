@@ -459,8 +459,8 @@ main {
 
 .world-map {
   aspect-ratio: 1.85 / 1;
-  background: #fff;
-  border: 1px solid var(--line-strong);
+  background: #111a1f;
+  border: 1px solid #34464c;
   isolation: isolate;
   min-height: 330px;
   overflow: hidden;
@@ -507,7 +507,7 @@ main {
   background: var(--coral);
   border: 2px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(16, 46, 51, 0.46);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.72);
   height: 11px;
   left: 50%;
   position: absolute;
@@ -524,24 +524,24 @@ main {
 .map-marker:hover .map-marker-dot,
 .map-marker:focus-visible .map-marker-dot {
   box-shadow:
-    0 0 0 1px var(--ink),
+    0 0 0 1px #fff,
     0 0 0 4px rgba(242, 111, 82, 0.28);
 }
 
 .map-marker.is-selected .map-marker-dot {
   background: var(--lime);
   box-shadow:
-    0 0 0 1px var(--ink),
+    0 0 0 1px #fff,
     0 0 0 4px rgba(242, 111, 82, 0.72);
   height: 14px;
   width: 14px;
 }
 
 .map-marker-leader {
-  background: var(--coral-dark);
+  background: var(--coral);
   height: 1px;
   left: 50%;
-  opacity: 0.62;
+  opacity: 0.82;
   pointer-events: none;
   position: absolute;
   top: 50%;
@@ -549,7 +549,7 @@ main {
 }
 
 .map-marker-anchor {
-  background: var(--coral-dark);
+  background: var(--coral);
   border-radius: 50%;
   height: 4px;
   pointer-events: none;
@@ -558,56 +558,50 @@ main {
   width: 4px;
 }
 
-.map-zoom-controls {
-  display: grid;
-  gap: 4px;
+.world-map .maplibregl-ctrl-top-left {
   left: 12px;
-  position: absolute;
   top: 12px;
-  z-index: 10;
 }
 
-.map-zoom-controls button {
-  align-items: center;
+.world-map .maplibregl-ctrl-top-left .maplibregl-ctrl {
+  margin: 0;
+}
+
+.world-map .maplibregl-ctrl-group {
   background: rgba(255, 255, 255, 0.96);
-  border: 1px solid #bcbcbc;
-  color: var(--ink);
-  cursor: pointer;
-  display: flex;
+  border-radius: 0;
+  box-shadow: 0 0 0 1px rgba(188, 188, 188, 0.95);
+  overflow: hidden;
+}
+
+.world-map .maplibregl-ctrl-group button {
   height: 36px;
-  justify-content: center;
-  padding: 0;
   width: 36px;
 }
 
-.map-zoom-controls button:hover:not(:disabled) {
+.world-map .maplibregl-ctrl-group button + button {
+  border-top: 1px solid #bcbcbc;
+}
+
+.world-map .maplibregl-ctrl-group button:hover:not(:disabled) {
   background: #f1f1f1;
 }
 
-.map-zoom-controls button:disabled {
-  color: #b7b7b7;
-  cursor: default;
+.world-map .maplibregl-ctrl-attrib,
+.world-map .maplibregl-ctrl-attrib.maplibregl-compact {
+  background: rgba(17, 26, 31, 0.82);
+  color: #d2d8da;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
 }
 
-.map-zoom-icon {
-  height: 14px;
-  position: relative;
-  width: 14px;
+.world-map .maplibregl-ctrl-attrib a,
+.world-map .maplibregl-ctrl-attrib.maplibregl-compact a {
+  color: #fff;
 }
 
-.map-zoom-icon::before,
-.map-zoom-plus::after {
-  background: currentColor;
-  content: "";
-  height: 2px;
-  left: 1px;
-  position: absolute;
-  top: 6px;
-  width: 12px;
-}
-
-.map-zoom-plus::after {
-  transform: rotate(90deg);
+.world-map .maplibregl-ctrl-attrib-button {
+  background-color: rgba(255, 255, 255, 0.92);
 }
 
 .map-hover-card {
@@ -639,7 +633,7 @@ main {
 
 .map-error {
   align-items: center;
-  color: var(--ink-soft);
+  color: #d2d8da;
   display: flex;
   font-size: 12px;
   inset: 0;

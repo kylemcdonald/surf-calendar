@@ -79,11 +79,20 @@ async function run() {
     viewport: { width: 1440, height: 1000 },
   });
   const consoleErrors = [];
+  let darkMatterTileResponses = 0;
 
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
+  page.on("response", (response) => {
+    if (
+      response.url().includes("tiles.basemaps.cartocdn.com/dark_all/") &&
+      response.ok()
+    ) {
+      darkMatterTileResponses += 1;
+    }
+  });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   await page
@@ -92,6 +101,23 @@ async function run() {
   assert.equal(await page.locator(".map-marker").count(), 50);
   assert.equal(await page.locator(".season-cell").count(), 600);
   assert.equal(await page.locator(".maplibregl-canvas").count(), 1);
+  assert.equal(
+    await page.getByTestId("world-map").getAttribute("data-map-system"),
+    "maplibre-web-mercator",
+  );
+  assert.equal(
+    await page.getByTestId("world-map").getAttribute("data-basemap"),
+    "carto-dark-matter",
+  );
+  assert.equal(await page.locator(".maplibregl-ctrl-zoom-in").count(), 1);
+  assert.equal(await page.locator(".maplibregl-ctrl-zoom-out").count(), 1);
+  assert.equal(await page.locator(".maplibregl-ctrl-attrib").count(), 1);
+  assert.equal(await page.locator(".map-zoom-controls").count(), 0);
+  assert.match(
+    await page.locator(".maplibregl-ctrl-attrib").innerText(),
+    /OpenStreetMap contributors © CARTO/,
+  );
+  assert.equal(darkMatterTileResponses > 0, true);
   assert.equal(
     await page.getByTestId("world-map").getAttribute("data-cluster-distance-miles"),
     "100",
@@ -212,10 +238,6 @@ async function run() {
     await page.getByTestId("world-map").getAttribute("data-zoom"),
   );
   assert.equal(Number.isFinite(initialZoom), true);
-  assert.equal(
-    await page.getByRole("button", { name: "Zoom out" }).isDisabled(),
-    true,
-  );
   await page.getByRole("button", { name: "Zoom in" }).click();
   await page.waitForFunction(
     (zoom) =>
@@ -242,15 +264,10 @@ async function run() {
       ) < 0.05,
     initialZoom,
   );
-  await page.waitForFunction(
-    () =>
-      document.querySelector('button[aria-label="Zoom out"]')?.disabled ===
-      true,
+  const returnedZoom = Number(
+    await page.getByTestId("world-map").getAttribute("data-zoom"),
   );
-  assert.equal(
-    await page.getByRole("button", { name: "Zoom out" }).isDisabled(),
-    true,
-  );
+  assert.equal(Math.abs(returnedZoom - initialZoom) < 0.05, true);
 
   const desktopOverflow = await page.evaluate(
     () =>

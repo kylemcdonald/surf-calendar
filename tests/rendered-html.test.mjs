@@ -35,6 +35,8 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /The world view/);
   assert.match(html, /Interactive world surf map/);
   assert.match(html, /data-testid="world-map"/);
+  assert.match(html, /data-map-system="maplibre-web-mercator"/);
+  assert.match(html, /data-basemap="carto-dark-matter"/);
   assert.match(html, /class="maplibre-map"/);
   assert.match(html, /Banzai Pipeline/);
   assert.match(html, /Cloudbreak/);
@@ -54,12 +56,14 @@ test("server-renders the complete surf atlas", async () => {
 });
 
 test("ships product data and removes starter preview infrastructure", async () => {
-  const [page, layout, packageJson, surfAtlas, surfData] = await Promise.all([
+  const [page, layout, packageJson, surfAtlas, surfData, worldMap] =
+    await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../app/surf-atlas.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/surf-data.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/world-map.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /<SurfAtlas \/>/);
@@ -68,6 +72,16 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.match(surfAtlas, /www\.google\.com\/maps\/search/);
   assert.doesNotMatch(surfAtlas, /getSource|Regional source/);
+  assert.match(worldMap, /CARTO Dark Matter/);
+  assert.match(worldMap, /NavigationControl/);
+  assert.doesNotMatch(
+    worldMap,
+    /proj4|EqualEarth|equal-earth|fitMapToWorld|enforceMapBounds/,
+  );
+  assert.doesNotMatch(
+    packageJson,
+    /proj4|topojson-client|world-atlas|topojson-specification/,
+  );
   assert.equal((surfData.match(/^ {4}country:/gm) ?? []).length, 50);
 
   await assert.rejects(access(new URL("app/_sites-preview", projectRoot)));
