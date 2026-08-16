@@ -38,7 +38,7 @@ type MapLibreApi = (typeof import("./load-maplibre"))["default"];
 
 interface WorldMapProps {
   spots: SurfSpot[];
-  selectedId: string;
+  selectedId: string | null;
   onSelect: (spotId: string) => void;
 }
 

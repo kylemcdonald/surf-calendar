@@ -3,7 +3,6 @@
 import { useMemo, useRef, useState } from "react";
 import {
   bestMonths,
-  getSource,
   MONTHS,
   REGIONS,
   SURF_SPOTS,
@@ -26,9 +25,13 @@ const levelShort: Record<Level, string> = {
   Advanced: "A",
 };
 
+const CURRENT_MONTH_INDEX = new Date().getMonth();
+
 export default function SurfAtlas() {
-  const [selectedSpotId, setSelectedSpotId] = useState("pipeline");
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState(10);
+  const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState<number | null>(
+    null,
+  );
   const [activeLevel, setActiveLevel] = useState<Level | null>(null);
   const detailRef = useRef<HTMLElement>(null);
 
@@ -41,13 +44,14 @@ export default function SurfAtlas() {
   );
 
   const selectedSpot =
-    SURF_SPOTS.find((spot) => spot.id === selectedSpotId) ?? SURF_SPOTS[0];
-  const selectedSpotNumber = visibleSpots.findIndex(
-    (spot) => spot.id === selectedSpot.id,
-  );
-  const selectedRating = selectedSpot.ratings[selectedMonthIndex];
-  const source = getSource(selectedSpot.sourceId);
-  const primeMonths = bestMonths(selectedSpot);
+    SURF_SPOTS.find((spot) => spot.id === selectedSpotId) ?? null;
+  const selectedSpotNumber = selectedSpot
+    ? visibleSpots.findIndex((spot) => spot.id === selectedSpot.id)
+    : -1;
+  const primeMonths = selectedSpot ? bestMonths(selectedSpot) : [];
+  const googleMapsUrl = selectedSpot
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${selectedSpot.lat},${selectedSpot.lon}`)}`
+    : "";
 
   const groupedSpots = useMemo(
     () =>
@@ -60,7 +64,7 @@ export default function SurfAtlas() {
 
   function selectSpot(spotId: string, monthIndex?: number) {
     setSelectedSpotId(spotId);
-    if (monthIndex !== undefined) setSelectedMonthIndex(monthIndex);
+    setSelectedMonthIndex(monthIndex ?? null);
 
     if (window.matchMedia("(max-width: 1279px)").matches) {
       window.requestAnimationFrame(() => {
@@ -76,11 +80,9 @@ export default function SurfAtlas() {
     const nextLevel = activeLevel === level ? null : level;
     setActiveLevel(nextLevel);
 
-    if (nextLevel && !selectedSpot.levels.includes(nextLevel)) {
-      const firstMatch = SURF_SPOTS.find((spot) =>
-        spot.levels.includes(nextLevel),
-      );
-      if (firstMatch) setSelectedSpotId(firstMatch.id);
+    if (nextLevel && selectedSpot && !selectedSpot.levels.includes(nextLevel)) {
+      setSelectedSpotId(null);
+      setSelectedMonthIndex(null);
     }
   }
 
@@ -91,10 +93,12 @@ export default function SurfAtlas() {
           <div className="matrix-key" aria-label="Chart legends and filters">
             <div className="key-group">
               <span className="key-title">Score</span>
-              {([1, 2, 3, 4, 5] as Rating[]).map((rating) => (
+              {([1, 5] as Rating[]).map((rating) => (
                 <span className="score-key" key={rating}>
-                  <i className={`rating-swatch rating-${rating}`} />
-                  <span>{rating}</span>
+                  <i
+                    aria-hidden="true"
+                    className={`rating-swatch rating-${rating}`}
+                  />
                   <span className="key-label">{ratingLabels[rating]}</span>
                 </span>
               ))}
@@ -140,14 +144,17 @@ export default function SurfAtlas() {
                       {MONTHS.map((month, monthIndex) => (
                         <th
                           className={
-                            selectedMonthIndex === monthIndex
-                              ? "is-selected-month"
+                            CURRENT_MONTH_INDEX === monthIndex
+                              ? "is-current-month"
                               : undefined
                           }
                           key={month}
                           scope="col"
                         >
                           {month}
+                          {CURRENT_MONTH_INDEX === monthIndex ? (
+                            <span className="sr-only">, current month</span>
+                          ) : null}
                         </th>
                       ))}
                     </tr>
@@ -156,9 +163,10 @@ export default function SurfAtlas() {
                     {groupedSpots.map(({ region, spots }) => (
                       <RegionRows
                         key={region}
+                        currentMonthIndex={CURRENT_MONTH_INDEX}
                         region={region}
                         selectedMonthIndex={selectedMonthIndex}
-                        selectedSpotId={selectedSpot.id}
+                        selectedSpotId={selectedSpot?.id ?? null}
                         spots={spots}
                         onSelect={selectSpot}
                       />
@@ -168,7 +176,7 @@ export default function SurfAtlas() {
               </div>
             </div>
 
-            <aside className="atlas-sidebar" aria-label="Map and selected spot">
+            <aside className="atlas-sidebar" aria-label="Map and spot details">
               <div className="sidebar-sticky">
                 <section className="map-section" aria-labelledby="map-heading">
                   <div className="map-heading-row">
@@ -179,112 +187,90 @@ export default function SurfAtlas() {
                   </div>
                   <WorldMap
                     onSelect={selectSpot}
-                    selectedId={selectedSpot.id}
+                    selectedId={selectedSpot?.id ?? null}
                     spots={visibleSpots}
                   />
                 </section>
 
-                <article
-                  aria-live="polite"
-                  className="spot-detail"
-                  data-testid="spot-detail"
-                  ref={detailRef}
-                >
-                  <div className="detail-kicker">
-                    <span>
-                      {String(selectedSpotNumber + 1).padStart(2, "0")} /{" "}
-                      {visibleSpots.length}
-                    </span>
-                    <span>{selectedSpot.region}</span>
-                  </div>
-                  <div className="detail-title-row">
-                    <div>
-                      <h2>{selectedSpot.name}</h2>
-                      <p>
-                        {selectedSpot.place} · {selectedSpot.country}
-                      </p>
-                    </div>
-                    <div className="level-list" aria-label="Suitable levels">
-                      {selectedSpot.levels.map((level) => (
-                        <span
-                          className={`level-badge level-${level.toLowerCase()}`}
-                          key={level}
-                        >
-                          {level}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <p className="detail-summary">{selectedSpot.summary}</p>
-
-                  <div className="detail-month">
-                    <div className="month-score">
-                      <div>
-                        <span>{MONTHS[selectedMonthIndex]}</span>
-                        <strong>{ratingLabels[selectedRating]}</strong>
-                      </div>
-                      <b className={`rating-${selectedRating}`}>
-                        {selectedRating}
-                        <small>/5</small>
-                      </b>
-                    </div>
-                    <div className="mini-season" aria-label="Full-year ratings">
-                      {MONTHS.map((month, index) => (
-                        <button
-                          aria-label={`${month}: ${selectedSpot.ratings[index]} out of 5, ${ratingLabels[selectedSpot.ratings[index]]}`}
-                          aria-pressed={selectedMonthIndex === index}
-                          className={`rating-${selectedSpot.ratings[index]}`}
-                          key={month}
-                          onClick={() => setSelectedMonthIndex(index)}
-                          type="button"
-                        >
-                          <span>{month.slice(0, 1)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <dl className="break-facts">
-                    <div>
-                      <dt>Break</dt>
-                      <dd>{selectedSpot.breakType}</dd>
-                    </div>
-                    <div>
-                      <dt>Line</dt>
-                      <dd>{selectedSpot.direction}</dd>
-                    </div>
-                    <div>
-                      <dt>Prime months</dt>
-                      <dd>{primeMonths.join(" · ")}</dd>
-                    </div>
-                  </dl>
-
-                  <div className="detail-notes">
-                    <div>
-                      <h3>Season read</h3>
-                      <p>{selectedSpot.seasonNote}</p>
-                      <p>{selectedSpot.conditions}</p>
-                    </div>
-                    <div className="caution-note">
-                      <h3>Know before you go</h3>
-                      <p>{selectedSpot.caution}</p>
-                    </div>
-                  </div>
-
-                  <a
-                    className="source-link"
-                    href={source.url}
-                    rel="noreferrer"
-                    target="_blank"
+                {selectedSpot ? (
+                  <article
+                    aria-live="polite"
+                    className="spot-detail"
+                    data-testid="spot-detail"
+                    ref={detailRef}
                   >
-                    <span>
-                      Regional source
-                      <small>{source.publisher}</small>
-                    </span>
-                    <span aria-hidden="true">↗</span>
-                  </a>
-                </article>
+                    <div className="detail-kicker">
+                      <span>
+                        {String(selectedSpotNumber + 1).padStart(2, "0")} /{" "}
+                        {visibleSpots.length}
+                      </span>
+                      <span>{selectedSpot.region}</span>
+                    </div>
+                    <div className="detail-title-row">
+                      <div>
+                        <h2>{selectedSpot.name}</h2>
+                        <p>
+                          {selectedSpot.place} · {selectedSpot.country}
+                        </p>
+                      </div>
+                      <div className="level-list" aria-label="Suitable levels">
+                        {selectedSpot.levels.map((level) => (
+                          <span
+                            className={`level-badge level-${level.toLowerCase()}`}
+                            key={level}
+                          >
+                            {level}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="detail-summary">{selectedSpot.summary}</p>
+
+                    <dl className="break-facts">
+                      <div>
+                        <dt>Break</dt>
+                        <dd>{selectedSpot.breakType}</dd>
+                      </div>
+                      <div>
+                        <dt>Line</dt>
+                        <dd>{selectedSpot.direction}</dd>
+                      </div>
+                      <div>
+                        <dt>Prime months</dt>
+                        <dd>{primeMonths.join(" · ")}</dd>
+                      </div>
+                    </dl>
+
+                    <div className="detail-notes">
+                      <div>
+                        <h3>Season read</h3>
+                        <p>{selectedSpot.seasonNote}</p>
+                        <p>{selectedSpot.conditions}</p>
+                      </div>
+                      <div className="caution-note">
+                        <h3>Know before you go</h3>
+                        <p>{selectedSpot.caution}</p>
+                      </div>
+                    </div>
+
+                    <a
+                      aria-label={`Open ${selectedSpot.name} in Google Maps`}
+                      className="maps-link"
+                      href={googleMapsUrl}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <span>
+                        Open in Google Maps
+                        <small>
+                          {selectedSpot.place} · {selectedSpot.country}
+                        </small>
+                      </span>
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                  </article>
+                ) : null}
               </div>
             </aside>
           </section>
@@ -295,14 +281,16 @@ export default function SurfAtlas() {
 }
 
 interface RegionRowsProps {
+  currentMonthIndex: number;
   region: string;
   spots: typeof SURF_SPOTS;
-  selectedSpotId: string;
-  selectedMonthIndex: number;
+  selectedSpotId: string | null;
+  selectedMonthIndex: number | null;
   onSelect: (spotId: string, monthIndex?: number) => void;
 }
 
 function RegionRows({
+  currentMonthIndex,
   region,
   spots,
   selectedSpotId,
@@ -367,6 +355,10 @@ function RegionRows({
                     aria-label={`${spot.name}, ${MONTHS[monthIndex]}: ${rating} out of 5, ${ratingLabels[rating]}`}
                     aria-pressed={selectedCell}
                     className={`season-cell rating-${rating}${
+                      currentMonthIndex === monthIndex
+                        ? " is-current-month-cell"
+                        : ""
+                    }${
                       selectedCell ? " is-selected-cell" : ""
                     }`}
                     onClick={() => onSelect(spot.id, monthIndex)}

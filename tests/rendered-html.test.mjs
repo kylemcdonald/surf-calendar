@@ -40,6 +40,11 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /Cloudbreak/);
   assert.equal((html.match(/class="season-cell/g) ?? []).length, 600);
   assert.equal((html.match(/class="level-filter"/g) ?? []).length, 3);
+  assert.equal((html.match(/class="score-key"/g) ?? []).length, 2);
+  assert.equal((html.match(/is-current-month-cell/g) ?? []).length, 50);
+  assert.equal((html.match(/class="is-current-month"/g) ?? []).length, 1);
+  assert.doesNotMatch(html, /data-testid="spot-detail"/);
+  assert.doesNotMatch(html, /mini-season|month-score|detail-month/);
   assert.doesNotMatch(html, /class="season-cell[^"]*"[^>]*>[1-5]<\/button>/);
   assert.doesNotMatch(
     html,
@@ -49,10 +54,11 @@ test("server-renders the complete surf atlas", async () => {
 });
 
 test("ships product data and removes starter preview infrastructure", async () => {
-  const [page, layout, packageJson, surfData] = await Promise.all([
+  const [page, layout, packageJson, surfAtlas, surfData] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/surf-atlas.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/surf-data.ts", import.meta.url), "utf8"),
   ]);
 
@@ -60,6 +66,8 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.match(layout, /Swell Season — Global Surf Atlas/);
   assert.doesNotMatch(page, /codex-preview|_sites-preview|SkeletonPreview/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
+  assert.match(surfAtlas, /www\.google\.com\/maps\/search/);
+  assert.doesNotMatch(surfAtlas, /getSource|Regional source/);
   assert.equal((surfData.match(/^ {4}country:/gm) ?? []).length, 50);
 
   await assert.rejects(access(new URL("app/_sites-preview", projectRoot)));
