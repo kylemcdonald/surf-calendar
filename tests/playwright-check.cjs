@@ -5,7 +5,7 @@ const { chromium } = require("playwright");
 
 const baseUrl = process.env.SURF_ATLAS_URL || "http://localhost:3001/";
 const outputDirectory = "test-results";
-const clusterDistanceMiles = 100;
+const markerMinSeparationPx = 16;
 const monthNames = [
   "Jan",
   "Feb",
@@ -21,53 +21,55 @@ const monthNames = [
   "Dec",
 ];
 
-function distanceMiles(first, second) {
-  const radians = (degrees) => (degrees * Math.PI) / 180;
-  const latitudeDelta = radians(second.latitude - first.latitude);
-  const longitudeDelta = radians(second.longitude - first.longitude);
-  const firstLatitude = radians(first.latitude);
-  const secondLatitude = radians(second.latitude);
-  const haversine =
-    Math.sin(latitudeDelta / 2) ** 2 +
-    Math.cos(firstLatitude) *
-      Math.cos(secondLatitude) *
-      Math.sin(longitudeDelta / 2) ** 2;
-
-  return 2 * 3958.7613 * Math.asin(Math.sqrt(haversine));
-}
-
 async function getMarkerPlacements(page) {
   return page.locator(".map-marker").evaluateAll((markers) =>
-    markers.map((marker) => ({
-      clustered: marker.getAttribute("data-clustered") === "true",
-      label: marker.getAttribute("data-label"),
-      latitude: Number(marker.getAttribute("data-latitude")),
-      longitude: Number(marker.getAttribute("data-longitude")),
-      offsetX: Number(marker.getAttribute("data-offset-x")),
-      offsetY: Number(marker.getAttribute("data-offset-y")),
-    })),
+    markers.map((marker) => {
+      const dotBounds = marker
+        .querySelector(".map-marker-dot")
+        .getBoundingClientRect();
+      const offsetX = Number(marker.getAttribute("data-offset-x"));
+      const offsetY = Number(marker.getAttribute("data-offset-y"));
+      const screenX = dotBounds.left + dotBounds.width / 2;
+      const screenY = dotBounds.top + dotBounds.height / 2;
+
+      return {
+        displaced: marker.getAttribute("data-displaced") === "true",
+        label: marker.getAttribute("data-label"),
+        offsetX,
+        offsetY,
+        screenX,
+        screenY,
+        trueX: screenX - offsetX,
+        trueY: screenY - offsetY,
+      };
+    }),
   );
 }
 
-function assertExactMarkerRule(markers) {
+function assertOverlapOnlyLayout(markers) {
   markers.forEach((marker, index) => {
-    const hasNearbyMarker = markers.some(
+    const overlapsAtTrueLocation = markers.some(
       (candidate, candidateIndex) =>
         candidateIndex !== index &&
-        distanceMiles(marker, candidate) <= clusterDistanceMiles,
+        Math.hypot(
+          marker.trueX - candidate.trueX,
+          marker.trueY - candidate.trueY,
+        ) < markerMinSeparationPx,
     );
-    const hasOffset = marker.offsetX !== 0 || marker.offsetY !== 0;
+    const hasOffset = Math.hypot(marker.offsetX, marker.offsetY) >= 0.5;
 
     assert.equal(
-      marker.clustered,
-      hasNearbyMarker,
-      `${marker.label} cluster status should match the 100-mile rule`,
-    );
-    assert.equal(
+      marker.displaced,
       hasOffset,
-      hasNearbyMarker,
-      `${marker.label} should be offset only when another point is within 100 miles`,
+      `${marker.label} displacement state should match its rendered offset`,
     );
+    if (!overlapsAtTrueLocation) {
+      assert.equal(
+        hasOffset,
+        false,
+        `${marker.label} should stay exactly on its coordinates when it does not overlap`,
+      );
+    }
   });
 }
 
@@ -79,18 +81,29 @@ async function run() {
     viewport: { width: 1440, height: 1000 },
   });
   const consoleErrors = [];
-  let darkMatterTileResponses = 0;
+  let openFreeMapResourceResponses = 0;
+  let osmBrightStyleResponses = 0;
+  let mapTilerRequests = 0;
 
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
+  page.on("request", (request) => {
+    if (request.url().includes("api.maptiler.com/")) mapTilerRequests += 1;
+  });
   page.on("response", (response) => {
-    if (
-      response.url().includes("tiles.basemaps.cartocdn.com/dark_all/") &&
-      response.ok()
-    ) {
-      darkMatterTileResponses += 1;
+    if (response.ok()) {
+      if (
+        response
+          .url()
+          .includes("openmaptiles.github.io/osm-bright-gl-style/style-cdn.json")
+      ) {
+        osmBrightStyleResponses += 1;
+      }
+      if (response.url().includes("tiles.openfreemap.org/")) {
+        openFreeMapResourceResponses += 1;
+      }
     }
   });
 
@@ -107,22 +120,44 @@ async function run() {
   );
   assert.equal(
     await page.getByTestId("world-map").getAttribute("data-basemap"),
-    "carto-dark-matter",
+    "openmaptiles-osm-bright",
   );
-  assert.equal(await page.locator(".maplibregl-ctrl-zoom-in").count(), 1);
-  assert.equal(await page.locator(".maplibregl-ctrl-zoom-out").count(), 1);
-  assert.equal(await page.locator(".maplibregl-ctrl-attrib").count(), 1);
+  assert.equal(await page.locator(".maplibregl-ctrl-zoom-in").count(), 0);
+  assert.equal(await page.locator(".maplibregl-ctrl-zoom-out").count(), 0);
+  assert.equal(await page.locator(".maplibregl-ctrl-group").count(), 0);
+  assert.equal(await page.locator(".maplibregl-ctrl-attrib").count(), 0);
+  assert.equal(await page.locator(".maplibregl-ctrl-attrib-button").count(), 0);
   assert.equal(await page.locator(".map-zoom-controls").count(), 0);
   assert.match(
-    await page.locator(".maplibregl-ctrl-attrib").innerText(),
-    /OpenStreetMap contributors © CARTO/,
+    await page.locator(".map-attribution").innerText(),
+    /OpenMapTiles.*OpenStreetMap contributors/s,
   );
-  assert.equal(darkMatterTileResponses > 0, true);
+  assert.equal(osmBrightStyleResponses > 0, true);
+  assert.equal(openFreeMapResourceResponses > 0, true);
+  assert.equal(mapTilerRequests, 0);
   assert.equal(
-    await page.getByTestId("world-map").getAttribute("data-cluster-distance-miles"),
-    "100",
+    await page
+      .getByTestId("world-map")
+      .getAttribute("data-marker-separation-px"),
+    "16",
   );
-  assertExactMarkerRule(await getMarkerPlacements(page));
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll(".map-marker")].some(
+      (marker) => marker.getAttribute("data-displaced") === "true",
+    ),
+  );
+  const initialMarkerPlacements = await getMarkerPlacements(page);
+  assertOverlapOnlyLayout(initialMarkerPlacements);
+  assert.equal(
+    initialMarkerPlacements.some((marker) => marker.displaced),
+    true,
+    "Overlapping markers should be separated at the initial world zoom",
+  );
+  assert.equal(
+    initialMarkerPlacements.some((marker) => !marker.displaced),
+    true,
+    "Isolated markers should remain exactly on their locations",
+  );
   assert.equal(await page.getByText("When every break comes alive").count(), 0);
   assert.equal(await page.getByText("50 breaks, one orbit").count(), 0);
   assert.equal(await page.getByText("How to read the atlas").count(), 0);
@@ -219,7 +254,7 @@ async function run() {
     ),
     ["true", "false", "false"],
   );
-  assertExactMarkerRule(await getMarkerPlacements(page));
+  assertOverlapOnlyLayout(await getMarkerPlacements(page));
 
   await page.getByRole("button", { name: "Show all skill levels" }).click();
   await page.waitForFunction(
@@ -238,36 +273,58 @@ async function run() {
     await page.getByTestId("world-map").getAttribute("data-zoom"),
   );
   assert.equal(Number.isFinite(initialZoom), true);
-  await page.getByRole("button", { name: "Zoom in" }).click();
+  const initiallyDisplacedMarker = initialMarkerPlacements.find(
+    (marker) => marker.displaced,
+  );
+  assert.ok(initiallyDisplacedMarker);
+  const zoomMapBounds = await page.getByTestId("world-map").boundingBox();
+  assert.ok(zoomMapBounds);
+  await page.mouse.move(
+    zoomMapBounds.x + zoomMapBounds.width / 2,
+    zoomMapBounds.y + zoomMapBounds.height / 2,
+  );
+  for (let step = 0; step < 13; step += 1) {
+    await page.mouse.wheel(0, -1000);
+    await page.waitForTimeout(240);
+  }
   await page.waitForFunction(
-    (zoom) =>
+    () =>
       Number(
         document.querySelector('[data-testid="world-map"]')?.getAttribute(
           "data-zoom",
         ),
-      ) > zoom + 0.1,
-    initialZoom,
+      ) > 9.5,
   );
   const zoomedIn = Number(
     await page.getByTestId("world-map").getAttribute("data-zoom"),
   );
   assert.equal(zoomedIn > initialZoom, true);
-  await page.getByRole("button", { name: "Zoom out" }).click();
   await page.waitForFunction(
-    (zoom) =>
-      Math.abs(
-        Number(
-          document.querySelector('[data-testid="world-map"]')?.getAttribute(
-            "data-zoom",
-          ),
-        ) - zoom,
-      ) < 0.05,
-    initialZoom,
+    (label) => {
+      const marker = [...document.querySelectorAll(".map-marker")].find(
+        (candidate) => candidate.getAttribute("data-label") === label,
+      );
+      return marker?.getAttribute("data-displaced") === "false";
+    },
+    initiallyDisplacedMarker.label,
   );
-  const returnedZoom = Number(
-    await page.getByTestId("world-map").getAttribute("data-zoom"),
+  const highZoomPlacements = await getMarkerPlacements(page);
+  assertOverlapOnlyLayout(highZoomPlacements);
+  const resolvedMarker = highZoomPlacements.find(
+    (marker) => marker.label === initiallyDisplacedMarker.label,
   );
-  assert.equal(Math.abs(returnedZoom - initialZoom) < 0.05, true);
+  assert.ok(resolvedMarker);
+  assert.equal(resolvedMarker.displaced, false);
+  assert.equal(resolvedMarker.offsetX, 0);
+  assert.equal(resolvedMarker.offsetY, 0);
+
+  await page.reload({ waitUntil: "networkidle" });
+  await page
+    .locator('[data-testid="world-map"][data-map-ready="true"]')
+    .waitFor({ state: "visible" });
+  await page.waitForFunction(
+    () => document.querySelectorAll(".map-marker").length === 50,
+  );
 
   const desktopOverflow = await page.evaluate(
     () =>

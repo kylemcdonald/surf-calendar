@@ -4,17 +4,19 @@ import type {
   LngLatBoundsLike,
   Map as MapLibreMap,
   Marker as MapLibreMarker,
-  StyleSpecification,
 } from "maplibre-gl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SurfSpot } from "./surf-data";
 
-const EARTH_RADIUS_MILES = 3958.7613;
 const INITIAL_MAP_BOUNDS: LngLatBoundsLike = [
   [-179.9, -52],
   [179.9, 68],
 ];
-export const MARKER_CLUSTER_DISTANCE_MILES = 100;
+const OSM_BRIGHT_STYLE_URL =
+  "https://openmaptiles.github.io/osm-bright-gl-style/style-cdn.json";
+const OPENFREEMAP_TILEJSON_URL = "https://tiles.openfreemap.org/planet";
+const OPENFREEMAP_FONT_ROOT = "https://tiles.openfreemap.org/fonts/";
+export const MARKER_MIN_SEPARATION_PX = 16;
 
 type MapLibreApi = (typeof import("./load-maplibre"))["default"];
 
@@ -24,68 +26,68 @@ interface WorldMapProps {
   onSelect: (spotId: string) => void;
 }
 
-interface MarkerPlacement {
-  clustered: boolean;
-  offset: readonly [number, number];
+interface RenderedMarker {
+  element: HTMLButtonElement;
+  marker: MapLibreMarker;
   spot: SurfSpot;
 }
 
-function createDarkMatterStyle(): StyleSpecification {
-  return {
-    version: 8,
-    name: "CARTO Dark Matter",
-    sources: {
-      "carto-dark-matter": {
-        type: "raster",
-        tiles: [
-          "https://tiles.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-        ],
-        tileSize: 256,
-        maxzoom: 20,
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
-      },
-    },
-    layers: [
-      {
-        id: "dark-background",
-        type: "background",
-        paint: { "background-color": "#111a1f" },
-      },
-      {
-        id: "carto-dark-matter",
-        type: "raster",
-        source: "carto-dark-matter",
-        paint: {
-          "raster-fade-duration": 0,
-          "raster-opacity": 1,
-          "raster-resampling": "linear",
-        },
-      },
-    ],
-  };
+function transformOsmBrightRequest(url: string) {
+  if (
+    url.startsWith(
+      "https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json",
+    )
+  ) {
+    return { url: OPENFREEMAP_TILEJSON_URL };
+  }
+
+  if (url.startsWith("https://api.maptiler.com/fonts/")) {
+    const fontPath = new URL(url).pathname.replace(/^\/fonts\//, "");
+    return { url: `${OPENFREEMAP_FONT_ROOT}${fontPath}` };
+  }
+
+  return { url };
 }
 
-function degreesToRadians(value: number) {
-  return (value * Math.PI) / 180;
+function setMarkerOffset(
+  renderedMarker: RenderedMarker,
+  offset: readonly [number, number],
+) {
+  const [offsetX, offsetY] = offset;
+  const displaced = Math.hypot(offsetX, offsetY) >= 0.5;
+  const { element, marker } = renderedMarker;
+  const leader = element.querySelector<HTMLElement>(".map-marker-leader");
+  const anchor = element.querySelector<HTMLElement>(".map-marker-anchor");
+
+  marker.setOffset([offsetX, offsetY]);
+  element.dataset.displaced = String(displaced);
+  element.dataset.offsetX = String(offsetX);
+  element.dataset.offsetY = String(offsetY);
+
+  if (!leader || !anchor) return;
+
+  leader.hidden = !displaced;
+  anchor.hidden = !displaced;
+  if (!displaced) return;
+
+  const leaderLength = Math.hypot(offsetX, offsetY);
+  const leaderAngle = (Math.atan2(-offsetY, -offsetX) * 180) / Math.PI;
+  leader.style.width = `${leaderLength}px`;
+  leader.style.transform = `translateY(-50%) rotate(${leaderAngle}deg)`;
+  anchor.style.left = `calc(50% + ${-offsetX}px)`;
+  anchor.style.top = `calc(50% + ${-offsetY}px)`;
 }
 
-export function distanceMiles(first: SurfSpot, second: SurfSpot) {
-  const latitudeDelta = degreesToRadians(second.lat - first.lat);
-  const longitudeDelta = degreesToRadians(second.lon - first.lon);
-  const firstLatitude = degreesToRadians(first.lat);
-  const secondLatitude = degreesToRadians(second.lat);
-  const haversine =
-    Math.sin(latitudeDelta / 2) ** 2 +
-    Math.cos(firstLatitude) *
-      Math.cos(secondLatitude) *
-      Math.sin(longitudeDelta / 2) ** 2;
+export function applyMarkerCollisionLayout(
+  map: MapLibreMap,
+  renderedMarkers: RenderedMarker[],
+) {
+  if (renderedMarkers.length === 0) return;
 
-  return 2 * EARTH_RADIUS_MILES * Math.asin(Math.sqrt(haversine));
-}
-
-export function createMarkerPlacements(spots: SurfSpot[]): MarkerPlacement[] {
-  const parents = spots.map((_, index) => index);
+  const projectedPoints = renderedMarkers.map(({ spot }) =>
+    map.project([spot.lon, spot.lat]),
+  );
+  const parents = renderedMarkers.map((_, index) => index);
 
   function find(index: number): number {
     if (parents[index] !== index) parents[index] = find(parents[index]);
@@ -98,89 +100,96 @@ export function createMarkerPlacements(spots: SurfSpot[]): MarkerPlacement[] {
     if (firstRoot !== secondRoot) parents[secondRoot] = firstRoot;
   }
 
-  for (let firstIndex = 0; firstIndex < spots.length; firstIndex += 1) {
+  for (
+    let firstIndex = 0;
+    firstIndex < projectedPoints.length;
+    firstIndex += 1
+  ) {
     for (
       let secondIndex = firstIndex + 1;
-      secondIndex < spots.length;
+      secondIndex < projectedPoints.length;
       secondIndex += 1
     ) {
+      const firstPoint = projectedPoints[firstIndex];
+      const secondPoint = projectedPoints[secondIndex];
       if (
-        distanceMiles(spots[firstIndex], spots[secondIndex]) <=
-        MARKER_CLUSTER_DISTANCE_MILES
+        Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y) <
+        MARKER_MIN_SEPARATION_PX
       ) {
         join(firstIndex, secondIndex);
       }
     }
   }
 
-  const clusters = new Map<number, number[]>();
-  spots.forEach((_, index) => {
+  const collisionGroups = new Map<number, number[]>();
+  renderedMarkers.forEach((_, index) => {
     const root = find(index);
-    clusters.set(root, [...(clusters.get(root) ?? []), index]);
+    collisionGroups.set(root, [
+      ...(collisionGroups.get(root) ?? []),
+      index,
+    ]);
   });
 
-  const placements = spots.map<MarkerPlacement>((spot) => ({
-    clustered: false,
-    offset: [0, 0],
-    spot,
-  }));
+  collisionGroups.forEach((indices) => {
+    if (indices.length === 1) {
+      setMarkerOffset(renderedMarkers[indices[0]], [0, 0]);
+      return;
+    }
 
-  clusters.forEach((indices) => {
-    if (indices.length < 2) return;
+    const centroid = indices.reduce(
+      (point, index) => ({
+        x: point.x + projectedPoints[index].x / indices.length,
+        y: point.y + projectedPoints[index].y / indices.length,
+      }),
+      { x: 0, y: 0 },
+    );
+    const radius = Math.max(
+      10,
+      MARKER_MIN_SEPARATION_PX /
+        (2 * Math.sin(Math.PI / indices.length)) +
+        1,
+    );
 
-    const radius =
-      indices.length === 2 ? 12 : indices.length === 3 ? 17 : 22;
-    indices.forEach((spotIndex, clusterIndex) => {
-      const angle = -Math.PI / 2 + (clusterIndex * Math.PI * 2) / indices.length;
-      placements[spotIndex] = {
-        clustered: true,
-        offset: [
-          Math.round(Math.cos(angle) * radius),
-          Math.round(Math.sin(angle) * radius),
-        ],
-        spot: spots[spotIndex],
-      };
+    indices.forEach((markerIndex, groupIndex) => {
+      const angle =
+        -Math.PI / 2 + (groupIndex * Math.PI * 2) / indices.length;
+      const projectedPoint = projectedPoints[markerIndex];
+      const offset: readonly [number, number] = [
+        Math.round(centroid.x + Math.cos(angle) * radius - projectedPoint.x),
+        Math.round(centroid.y + Math.sin(angle) * radius - projectedPoint.y),
+      ];
+      setMarkerOffset(renderedMarkers[markerIndex], offset);
     });
   });
-
-  return placements;
 }
 
 function createMarkerElement(
-  placement: MarkerPlacement,
+  spot: SurfSpot,
   selected: boolean,
   onSelect: () => void,
   onHover: (spotId: string | null) => void,
 ) {
-  const { clustered, offset, spot } = placement;
   const button = document.createElement("button");
   button.type = "button";
   button.className = `map-marker${selected ? " is-selected" : ""}`;
   button.setAttribute("aria-label", `Select ${spot.name}, ${spot.country}`);
   button.setAttribute("aria-pressed", String(selected));
-  button.dataset.clustered = String(clustered);
+  button.dataset.displaced = "false";
   button.dataset.label = spot.name;
   button.dataset.latitude = String(spot.lat);
   button.dataset.longitude = String(spot.lon);
-  button.dataset.offsetX = String(offset[0]);
-  button.dataset.offsetY = String(offset[1]);
+  button.dataset.offsetX = "0";
+  button.dataset.offsetY = "0";
 
-  if (clustered) {
-    const leaderLength = Math.hypot(offset[0], offset[1]);
-    const leaderAngle =
-      (Math.atan2(-offset[1], -offset[0]) * 180) / Math.PI;
-    const leader = document.createElement("span");
-    leader.className = "map-marker-leader";
-    leader.style.width = `${leaderLength}px`;
-    leader.style.transform = `translateY(-50%) rotate(${leaderAngle}deg)`;
-    button.append(leader);
+  const leader = document.createElement("span");
+  leader.className = "map-marker-leader";
+  leader.hidden = true;
+  button.append(leader);
 
-    const anchor = document.createElement("span");
-    anchor.className = "map-marker-anchor";
-    anchor.style.left = `calc(50% - ${offset[0]}px)`;
-    anchor.style.top = `calc(50% - ${offset[1]}px)`;
-    button.append(anchor);
-  }
+  const anchor = document.createElement("span");
+  anchor.className = "map-marker-anchor";
+  anchor.hidden = true;
+  button.append(anchor);
 
   const dot = document.createElement("span");
   dot.className = "map-marker-dot";
@@ -207,14 +216,15 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const mapLibreRef = useRef<MapLibreApi | null>(null);
-  const markersRef = useRef<MapLibreMarker[]>([]);
+  const markersRef = useRef<RenderedMarker[]>([]);
+  const collisionFrameRef = useRef<number | null>(null);
+  const scheduleMarkerLayoutRef = useRef<() => void>(() => undefined);
   const onSelectRef = useRef(onSelect);
   const [hoveredSpotId, setHoveredSpotId] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [mapZoom, setMapZoom] = useState(0);
 
-  const placements = useMemo(() => createMarkerPlacements(spots), [spots]);
   const hoveredSpot = useMemo(
     () => spots.find((spot) => spot.id === hoveredSpotId) ?? null,
     [hoveredSpotId, spots],
@@ -237,7 +247,7 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
 
         mapLibreRef.current = maplibregl;
         map = new maplibregl.Map({
-          attributionControl: { compact: true },
+          attributionControl: false,
           bounds: INITIAL_MAP_BOUNDS,
           container: mapContainerRef.current,
           dragRotate: false,
@@ -246,23 +256,34 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
           maxZoom: 12,
           minZoom: -0.75,
           pitchWithRotate: false,
-          style: createDarkMatterStyle(),
+          style: OSM_BRIGHT_STYLE_URL,
+          transformRequest: transformOsmBrightRequest,
         });
         mapRef.current = map;
         map.touchZoomRotate.disableRotation();
-        map.addControl(
-          new maplibregl.NavigationControl({
-            showCompass: false,
-            showZoom: true,
-          }),
-          "top-left",
-        );
 
-        map.on("zoom", () => setMapZoom(map?.getZoom() ?? 0));
+        const scheduleMarkerLayout = () => {
+          if (collisionFrameRef.current !== null) return;
+          collisionFrameRef.current = window.requestAnimationFrame(() => {
+            collisionFrameRef.current = null;
+            if (map) applyMarkerCollisionLayout(map, markersRef.current);
+          });
+        };
+        scheduleMarkerLayoutRef.current = scheduleMarkerLayout;
+
+        const updateMapLayout = () => {
+          if (!map) return;
+          setMapZoom(map.getZoom());
+          scheduleMarkerLayout();
+        };
+
+        map.on("move", updateMapLayout);
+        map.on("resize", scheduleMarkerLayout);
         map.on("load", () => {
           if (cancelled || !map) return;
           setMapZoom(map.getZoom());
           setMapReady(true);
+          scheduleMarkerLayout();
         });
       } catch (error) {
         console.error("Unable to initialize MapLibre", error);
@@ -274,7 +295,12 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
 
     return () => {
       cancelled = true;
-      markersRef.current.forEach((marker) => marker.remove());
+      if (collisionFrameRef.current !== null) {
+        window.cancelAnimationFrame(collisionFrameRef.current);
+        collisionFrameRef.current = null;
+      }
+      scheduleMarkerLayoutRef.current = () => undefined;
+      markersRef.current.forEach(({ marker }) => marker.remove());
       markersRef.current = [];
       map?.remove();
       if (mapRef.current === map) mapRef.current = null;
@@ -287,38 +313,40 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
     const maplibregl = mapLibreRef.current;
     if (!map || !maplibregl || !mapReady) return;
 
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = placements.map((placement) => {
+    markersRef.current.forEach(({ marker }) => marker.remove());
+    markersRef.current = spots.map((spot) => {
       const markerElement = createMarkerElement(
-        placement,
-        placement.spot.id === selectedId,
-        () => onSelectRef.current(placement.spot.id),
+        spot,
+        spot.id === selectedId,
+        () => onSelectRef.current(spot.id),
         setHoveredSpotId,
       );
-
-      return new maplibregl.Marker({
+      const marker = new maplibregl.Marker({
         element: markerElement,
         anchor: "center",
-        offset: [placement.offset[0], placement.offset[1]],
+        offset: [0, 0],
         subpixelPositioning: true,
       })
-        .setLngLat([placement.spot.lon, placement.spot.lat])
+        .setLngLat([spot.lon, spot.lat])
         .addTo(map);
+
+      return { element: markerElement, marker, spot };
     });
+    scheduleMarkerLayoutRef.current();
 
     return () => {
-      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current.forEach(({ marker }) => marker.remove());
       markersRef.current = [];
     };
-  }, [mapReady, placements, selectedId]);
+  }, [mapReady, selectedId, spots]);
 
   return (
     <div
-      className="world-map world-map-dark"
-      data-basemap="carto-dark-matter"
-      data-cluster-distance-miles={MARKER_CLUSTER_DISTANCE_MILES}
+      className="world-map"
+      data-basemap="openmaptiles-osm-bright"
       data-map-ready={mapReady}
       data-map-system="maplibre-web-mercator"
+      data-marker-separation-px={MARKER_MIN_SEPARATION_PX}
       data-testid="world-map"
       data-zoom={mapZoom.toFixed(3)}
     >
@@ -326,9 +354,9 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
         Interactive world surf map
       </h2>
       <p className="sr-only" id="world-map-description">
-        Surf spots on a Dark Matter street map. Select a marker for its break
-        profile, drag to pan, and use the standard controls, mouse wheel, or
-        touch gesture to zoom.
+        Surf spots on an OSM Bright street map. Select a marker for its break
+        profile, drag to pan, and use a mouse wheel, double-click, or touch
+        gesture to zoom.
       </p>
 
       {mapError ? (
@@ -358,6 +386,18 @@ export function WorldMap({ spots, selectedId, onSelect }: WorldMapProps) {
             ref={mapContainerRef}
             role="application"
           />
+          <div aria-label="Map attribution" className="map-attribution">
+            <a href="https://openmaptiles.org/" rel="noreferrer" target="_blank">
+              © OpenMapTiles
+            </a>{" "}
+            <a
+              href="https://www.openstreetmap.org/copyright"
+              rel="noreferrer"
+              target="_blank"
+            >
+              © OpenStreetMap contributors
+            </a>
+          </div>
         </>
       )}
     </div>

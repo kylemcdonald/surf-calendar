@@ -459,8 +459,8 @@ main {
 
 .world-map {
   aspect-ratio: 1.85 / 1;
-  background: #111a1f;
-  border: 1px solid #34464c;
+  background: #f5f1ed;
+  border: 1px solid var(--line-strong);
   isolation: isolate;
   min-height: 330px;
   overflow: hidden;
@@ -507,7 +507,7 @@ main {
   background: var(--coral);
   border: 2px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.72);
+  box-shadow: 0 0 0 1px rgba(16, 46, 51, 0.5);
   height: 11px;
   left: 50%;
   position: absolute;
@@ -558,50 +558,32 @@ main {
   width: 4px;
 }
 
-.world-map .maplibregl-ctrl-top-left {
-  left: 12px;
-  top: 12px;
+.map-marker-leader[hidden],
+.map-marker-anchor[hidden] {
+  display: none;
 }
 
-.world-map .maplibregl-ctrl-top-left .maplibregl-ctrl {
-  margin: 0;
-}
-
-.world-map .maplibregl-ctrl-group {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 0;
-  box-shadow: 0 0 0 1px rgba(188, 188, 188, 0.95);
-  overflow: hidden;
-}
-
-.world-map .maplibregl-ctrl-group button {
-  height: 36px;
-  width: 36px;
-}
-
-.world-map .maplibregl-ctrl-group button + button {
-  border-top: 1px solid #bcbcbc;
-}
-
-.world-map .maplibregl-ctrl-group button:hover:not(:disabled) {
-  background: #f1f1f1;
-}
-
-.world-map .maplibregl-ctrl-attrib,
-.world-map .maplibregl-ctrl-attrib.maplibregl-compact {
-  background: rgba(17, 26, 31, 0.82);
-  color: #d2d8da;
+.map-attribution {
+  background: rgba(251, 250, 245, 0.88);
+  bottom: 5px;
+  color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 8px;
+  font-size: 7px;
+  line-height: 1.35;
+  padding: 2px 4px;
+  position: absolute;
+  right: 5px;
+  z-index: 8;
 }
 
-.world-map .maplibregl-ctrl-attrib a,
-.world-map .maplibregl-ctrl-attrib.maplibregl-compact a {
-  color: #fff;
+.map-attribution a {
+  color: inherit;
+  text-decoration-color: rgba(55, 83, 84, 0.45);
+  text-underline-offset: 2px;
 }
 
-.world-map .maplibregl-ctrl-attrib-button {
-  background-color: rgba(255, 255, 255, 0.92);
+.map-attribution a:hover {
+  color: var(--coral-dark);
 }
 
 .map-hover-card {
@@ -609,7 +591,7 @@ main {
   border: 1px solid #bcbcbc;
   display: flex;
   flex-direction: column;
-  max-width: calc(100% - 76px);
+  max-width: calc(100% - 24px);
   padding: 9px 11px;
   pointer-events: none;
   position: absolute;
@@ -633,7 +615,7 @@ main {
 
 .map-error {
   align-items: center;
-  color: #d2d8da;
+  color: var(--ink-soft);
   display: flex;
   font-size: 12px;
   inset: 0;

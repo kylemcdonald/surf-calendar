@@ -36,8 +36,12 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /Interactive world surf map/);
   assert.match(html, /data-testid="world-map"/);
   assert.match(html, /data-map-system="maplibre-web-mercator"/);
-  assert.match(html, /data-basemap="carto-dark-matter"/);
+  assert.match(html, /data-basemap="openmaptiles-osm-bright"/);
+  assert.match(html, /data-marker-separation-px="16"/);
   assert.match(html, /class="maplibre-map"/);
+  assert.match(html, /class="map-attribution"/);
+  assert.match(html, /© OpenMapTiles/);
+  assert.match(html, /© OpenStreetMap contributors/);
   assert.match(html, /Banzai Pipeline/);
   assert.match(html, /Cloudbreak/);
   assert.equal((html.match(/class="season-cell/g) ?? []).length, 600);
@@ -72,8 +76,15 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.match(surfAtlas, /www\.google\.com\/maps\/search/);
   assert.doesNotMatch(surfAtlas, /getSource|Regional source/);
-  assert.match(worldMap, /CARTO Dark Matter/);
-  assert.match(worldMap, /NavigationControl/);
+  assert.match(worldMap, /osm-bright-gl-style\/style-cdn\.json/);
+  assert.match(worldMap, /tiles\.openfreemap\.org\/planet/);
+  assert.match(worldMap, /MARKER_MIN_SEPARATION_PX/);
+  assert.match(worldMap, /map\.project/);
+  assert.match(worldMap, /attributionControl: false/);
+  assert.doesNotMatch(
+    worldMap,
+    /CARTO Dark Matter|NavigationControl|createDarkMatterStyle|distanceMiles|MARKER_CLUSTER_DISTANCE_MILES/,
+  );
   assert.doesNotMatch(
     worldMap,
     /proj4|EqualEarth|equal-earth|fitMapToWorld|enforceMapBounds/,
