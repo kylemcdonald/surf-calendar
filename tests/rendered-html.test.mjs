@@ -32,7 +32,6 @@ test("server-renders the complete surf atlas", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Swell Season — Global Surf Atlas<\/title>/i);
-  assert.match(html, /The world view/);
   assert.match(html, /Interactive world surf map/);
   assert.match(html, /data-testid="world-map"/);
   assert.match(html, /data-map-system="maplibre-web-mercator"/);
@@ -54,7 +53,7 @@ test("server-renders the complete surf atlas", async () => {
   assert.doesNotMatch(html, /class="season-cell[^"]*"[^>]*>[1-5]<\/button>/);
   assert.doesNotMatch(
     html,
-    /Find your next|When every break comes alive|50 breaks, one orbit|How to read the atlas|Regional source library|Back to top/,
+    /Find your next|When every break comes alive|50 breaks, one orbit|How to read the atlas|Regional source library|Back to top|The world view|Select a dot/,
   );
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
 });
@@ -99,4 +98,25 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.equal((surfData.match(/^ {4}country:/gm) ?? []).length, 50);
 
   await assert.rejects(access(new URL("app/_sites-preview", projectRoot)));
+});
+
+test("configures a static GitHub Pages deployment", async () => {
+  const [nextConfig, packageJson, pagesWorkflow, preparePages] =
+    await Promise.all([
+      readFile(new URL("../next.config.ts", import.meta.url), "utf8"),
+      readFile(new URL("../package.json", import.meta.url), "utf8"),
+      readFile(
+        new URL("../.github/workflows/deploy-pages.yml", import.meta.url),
+        "utf8",
+      ),
+      readFile(new URL("../scripts/prepare-pages.mjs", import.meta.url), "utf8"),
+    ]);
+
+  assert.match(nextConfig, /assetPrefix: "\/surf-calendar"/);
+  assert.match(nextConfig, /output: "export"/);
+  assert.match(packageJson, /"build:pages"/);
+  assert.match(pagesWorkflow, /actions\/deploy-pages@v4/);
+  assert.match(pagesWorkflow, /path: dist\/client/);
+  assert.match(preparePages, /surf-calendar\/_next/);
+  await access(new URL("../public/.nojekyll", import.meta.url));
 });

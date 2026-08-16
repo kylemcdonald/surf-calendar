@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import SurfAtlas from "./surf-atlas";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: { absolute: "Swell Season — Global Surf Atlas" },
   description:

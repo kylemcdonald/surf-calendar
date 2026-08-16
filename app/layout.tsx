@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+const publicBasePath =
+  process.env.SURF_PAGES_BUILD === "true" ? "/surf-calendar" : "";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -20,8 +23,8 @@ export const metadata: Metadata = {
   description:
     "A visual month-by-month field guide to 50 of the world’s essential surf breaks.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: `${publicBasePath}/favicon.svg`,
+    shortcut: `${publicBasePath}/favicon.svg`,
   },
 };
 

@@ -96,7 +96,7 @@ main {
 }
 
 .atlas-frame {
-  padding-block: clamp(30px, 3.5vw, 58px);
+  padding-block: 0 clamp(30px, 3.5vw, 58px);
 }
 
 .atlas-layout {
@@ -113,7 +113,6 @@ main {
 .matrix-key {
   align-items: center;
   border-bottom: 1px solid var(--line-strong);
-  border-top: 1px solid var(--line-strong);
   display: flex;
   flex-wrap: wrap;
   gap: 14px 28px;
@@ -436,25 +435,6 @@ main {
 
 .map-section {
   margin-bottom: 26px;
-}
-
-.map-heading-row {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.map-title {
-  margin: 0;
-}
-
-.map-heading-row > span {
-  color: var(--ink-soft);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .world-map {
@@ -879,7 +859,7 @@ main {
 
 @media (max-width: 560px) {
   .atlas-frame {
-    padding-block: 26px 34px;
+    padding-block: 0 34px;
   }
 
   .matrix-key {
@@ -901,10 +881,6 @@ main {
 
   .spot-identity small {
     max-width: 154px;
-  }
-
-  .map-heading-row > span {
-    display: none;
   }
 
   .world-map {

@@ -167,6 +167,17 @@ async function run() {
   assert.equal(await page.getByText("When every break comes alive").count(), 0);
   assert.equal(await page.getByText("50 breaks, one orbit").count(), 0);
   assert.equal(await page.getByText("How to read the atlas").count(), 0);
+  assert.equal(await page.getByText("The world view", { exact: true }).count(), 0);
+  assert.equal(await page.getByText("Select a dot", { exact: true }).count(), 0);
+  const topKeyBounds = await page.locator(".matrix-key").boundingBox();
+  assert.ok(topKeyBounds);
+  assert.equal(topKeyBounds.y <= 1, true, "The page content should start at the top");
+  assert.equal(
+    await page.locator(".matrix-key").evaluate(
+      (element) => getComputedStyle(element).borderTopWidth,
+    ),
+    "0px",
+  );
   assert.equal(await page.getByTestId("spot-detail").count(), 0);
   assert.equal(await page.locator(".map-marker.is-selected").count(), 0);
   assert.equal(await page.locator(".is-selected-row").count(), 0);

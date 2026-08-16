@@ -178,13 +178,10 @@ export default function SurfAtlas() {
 
             <aside className="atlas-sidebar" aria-label="Map and spot details">
               <div className="sidebar-sticky">
-                <section className="map-section" aria-labelledby="map-heading">
-                  <div className="map-heading-row">
-                    <h1 className="eyebrow map-title" id="map-heading">
-                      The world view
-                    </h1>
-                    <span>Select a dot</span>
-                  </div>
+                <section
+                  aria-label="Interactive world surf map"
+                  className="map-section"
+                >
                   <WorldMap
                     onSelect={selectSpot}
                     selectedId={selectedSpot?.id ?? null}
