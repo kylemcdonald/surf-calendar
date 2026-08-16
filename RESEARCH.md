@@ -18,6 +18,6 @@ Wave quality and consistency carry the greatest weight. Prevailing wind, rainfal
 
 ## Research base
 
-The in-app source library links the regional references used to calibrate seasons, including official tourism boards for Hawaiʻi, Portugal, Costa Rica, El Salvador, Morocco, Barbados, Fiji, the Philippines, the Maldives, and New Zealand; local tourism bodies for Tofino, Jeffreys Bay, Bundoran, and Cornwall; and specialist spot guides from Surfline and Swell Archive.
+Each spot profile links a regional reference used to calibrate its seasons, including official tourism boards for Hawaiʻi, Portugal, Costa Rica, El Salvador, Morocco, Barbados, Fiji, the Philippines, the Maldives, and New Zealand; local tourism bodies for Tofino, Jeffreys Bay, Bundoran, and Cornwall; and specialist spot guides from Surfline and Swell Archive.
 
 The source set was reviewed on August 16, 2026. Exact conditions always depend on swell direction and period, wind, tide, local bathymetry, and recent sand movement. Travelers should use a current marine forecast and local guidance before entering the water.

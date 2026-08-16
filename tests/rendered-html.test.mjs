@@ -32,16 +32,20 @@ test("server-renders the complete surf atlas", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Swell Season — Global Surf Atlas<\/title>/i);
-  assert.match(html, /Find your next/);
-  assert.match(html, /perfect season\./);
-  assert.match(html, /When every break comes alive/);
-  assert.match(html, /World map of 50 surf spots/);
+  assert.match(html, /The world view/);
+  assert.match(html, /Interactive world surf map/);
   assert.match(html, /Banzai Pipeline/);
   assert.match(html, /Cloudbreak/);
   assert.equal((html.match(/class="season-cell/g) ?? []).length, 600);
+  assert.equal((html.match(/class="level-filter"/g) ?? []).length, 3);
   assert.equal(
     (html.match(/class="map-marker(?: is-selected)?"/g) ?? []).length,
     50,
+  );
+  assert.doesNotMatch(html, /class="season-cell[^"]*"[^>]*>[1-5]<\/button>/);
+  assert.doesNotMatch(
+    html,
+    /Find your next|When every break comes alive|50 breaks, one orbit|How to read the atlas|Regional source library|Back to top/,
   );
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
 });
