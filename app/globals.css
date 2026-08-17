@@ -471,27 +471,32 @@ main {
     inset -1px 0 rgba(189, 71, 52, 0.28);
 }
 
-.rating-1 {
+.rating-1,
+.season-band-1 {
   background: var(--mist);
   color: #536365;
 }
 
-.rating-2 {
+.rating-2,
+.season-band-2 {
   background: var(--sea-pale);
   color: #365b7a;
 }
 
-.rating-3 {
+.rating-3,
+.season-band-3 {
   background: var(--sea-light);
   color: #173d61;
 }
 
-.rating-4 {
+.rating-4,
+.season-band-4 {
   background: var(--sea);
   color: var(--paper);
 }
 
-.rating-5 {
+.rating-5,
+.season-band-5 {
   background: var(--deep-sea);
   color: var(--paper);
 }

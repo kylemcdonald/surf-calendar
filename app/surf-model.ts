@@ -415,6 +415,21 @@ export function getMonthlyProfiles(spot: SurfSpot, board: Board) {
   );
 }
 
+export function getRelativeSeasonBand(
+  profiles: readonly SurfMonthProfile[],
+  monthIndex: number,
+): Rating {
+  const scores = profiles.map((profile) => profile.score);
+  const minimum = Math.min(...scores);
+  const maximum = Math.max(...scores);
+  const range = maximum - minimum;
+
+  if (range < 0.05) return 3;
+
+  const normalized = (profiles[monthIndex].score - minimum) / range;
+  return toRating(Math.round(normalized * 4) + 1);
+}
+
 export function getBestMonths(spot: SurfSpot, board: Board) {
   const profiles = getMonthlyProfiles(spot, board);
   const maximum = Math.max(...profiles.map((profile) => profile.score));

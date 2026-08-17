@@ -190,8 +190,8 @@ async function run() {
     .locator(".matrix-key .score-key")
     .allInnerTexts();
   assert.deepEqual(scoreLabels.map((label) => label.trim()), [
-    "Poor fit",
-    "Excellent",
+    "Lower for spot",
+    "Prime for spot",
   ]);
   assert.equal(await page.locator(".matrix-key .score-key").count(), 2);
 
@@ -202,11 +202,13 @@ async function run() {
     ),
     ["true", "false"],
   );
-  const shortboardScores = await page
-    .locator(".season-cell")
-    .allInnerTexts();
+  const shortboardScores = await page.locator(".season-cell").evaluateAll(
+    (cells) => cells.map((cell) => cell.getAttribute("data-absolute-score")),
+  );
   await page.getByTestId("board-longboard").click();
-  const longboardScores = await page.locator(".season-cell").allInnerTexts();
+  const longboardScores = await page.locator(".season-cell").evaluateAll(
+    (cells) => cells.map((cell) => cell.getAttribute("data-absolute-score")),
+  );
   assert.equal(shortboardScores.length, 600);
   assert.equal(
     shortboardScores.filter((score, index) => score !== longboardScores[index])
@@ -296,9 +298,34 @@ async function run() {
     .locator(".season-cell")
     .evaluateAll((cells) => cells.map((cell) => cell.innerText.trim()));
   assert.equal(
-    seasonCellText.every((text) => /^[1-5]\.\d$/.test(text)),
+    seasonCellText.every((text) => text === ""),
     true,
   );
+  const rowScales = await page
+    .locator("tbody tr:not(.region-row)")
+    .evaluateAll((rows) =>
+      rows.map((row) => {
+        const cells = [...row.querySelectorAll(".season-cell")];
+        const scores = cells.map((cell) =>
+          Number(cell.getAttribute("data-absolute-score")),
+        );
+        const bands = cells.map((cell) =>
+          Number(cell.getAttribute("data-relative-band")),
+        );
+        const minimum = Math.min(...scores);
+        const maximum = Math.max(...scores);
+
+        return { bands, maximum, minimum };
+      }),
+    );
+  rowScales.forEach(({ bands, maximum, minimum }) => {
+    if (maximum - minimum < 0.05) {
+      assert.equal(bands.every((band) => band === 3), true);
+    } else {
+      assert.equal(bands.includes(1), true);
+      assert.equal(bands.includes(5), true);
+    }
+  });
   const levelFilters = page.locator(".level-filter");
   assert.deepEqual(
     await levelFilters.evaluateAll((buttons) =>

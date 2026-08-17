@@ -6,6 +6,7 @@ import {
   CROWD_LABELS,
   getBestMonths,
   getMonthlyProfiles,
+  getRelativeSeasonBand,
   getScoreLabel,
   getSurfProfile,
   RUBRIC,
@@ -20,17 +21,13 @@ import {
   REGIONS,
   SURF_SPOTS,
   type Level,
-  type Rating,
 } from "./surf-data";
 import { WorldMap } from "./world-map";
 
-const ratingLabels: Record<Rating, string> = {
-  1: "Poor fit",
-  2: "Compromised",
-  3: "Worth a look",
-  4: "Very good",
-  5: "Excellent",
-};
+const seasonLegend = [
+  { band: 1, label: "Lower for spot" },
+  { band: 5, label: "Prime for spot" },
+] as const;
 
 const levelShort: Record<Level, string> = {
   Beginner: "B",
@@ -128,14 +125,14 @@ export default function SurfAtlas() {
             </div>
 
             <div className="key-group score-legend">
-              <span className="key-title">Score</span>
-              {([1, 5] as Rating[]).map((rating) => (
-                <span className="score-key" key={rating}>
+              <span className="key-title">Season strength</span>
+              {seasonLegend.map(({ band, label }) => (
+                <span className="score-key" key={band}>
                   <i
                     aria-hidden="true"
-                    className={`rating-swatch rating-${rating}`}
+                    className={`rating-swatch season-band-${band}`}
                   />
-                  <span className="key-label">{ratingLabels[rating]}</span>
+                  <span className="key-label">{label}</span>
                 </span>
               ))}
               <details className="rubric-popover">
@@ -180,10 +177,13 @@ export default function SurfAtlas() {
               <div className="matrix-scroll" data-testid="season-matrix">
                 <table className="season-matrix">
                   <caption className="sr-only">
-                    Board-specific modeled scores from 1, poor fit, to 5,
-                    excellent, for 50 surf spots across January through
-                    December. Scores currently assume a {BOARD_LABELS[board]}.
-                    The current filter shows {visibleSpots.length} spots.
+                    Seasonal strength for 50 surf spots across January through
+                    December. Cell color is normalized within each spot from
+                    its lowest-scoring to highest-scoring month, so colors do
+                    not compare quality between spots. Select a cell to inspect
+                    its absolute modeled score. Scores currently assume a{" "}
+                    {BOARD_LABELS[board]}. The current filter shows{" "}
+                    {visibleSpots.length} spots.
                   </caption>
                   <thead>
                     <tr>
@@ -529,6 +529,10 @@ function RegionRows({
             {profiles.map((profile) => {
               const selectedCell =
                 selected && selectedMonthIndex === profile.monthIndex;
+              const relativeBand = getRelativeSeasonBand(
+                profiles,
+                profile.monthIndex,
+              );
 
               return (
                 <td
@@ -541,12 +545,12 @@ function RegionRows({
                 >
                   <button
                     aria-label={`${spot.name}, ${profile.month}, ${BOARD_LABELS[board]}: ${profile.score.toFixed(1)} out of 5, ${getScoreLabel(profile.score)}. Show breakdown.`}
-                    className={`season-cell rating-${profile.band}`}
+                    className={`season-cell season-band-${relativeBand}`}
+                    data-absolute-score={profile.score.toFixed(1)}
+                    data-relative-band={relativeBand}
                     onClick={() => onSelect(spot.id, profile.monthIndex)}
                     type="button"
-                  >
-                    {profile.score.toFixed(1)}
-                  </button>
+                  />
                 </td>
               );
             })}

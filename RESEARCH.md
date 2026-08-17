@@ -46,7 +46,7 @@ The score starts as 100 weighted points:
 | Tide flexibility | 10 | Five-step tolerance scale |
 | Crowd pressure | 10 | Inverse of the five-step crowd scale |
 
-The weighted total maps linearly onto 1.0–5.0 and is rounded to one decimal. The score cells use five color bands, while the number preserves the smaller differences.
+The weighted total maps linearly onto 1.0–5.0 and is rounded to one decimal. Absolute scores appear in the detail card. The main matrix deliberately removes the numbers and normalizes its five color bands within each spot: that row’s lowest score is lightest and its highest score is darkest. The matrix therefore shows *when each spot is strongest*, not whether one spot is objectively better than another.
 
 The two board curves deliberately cross:
 

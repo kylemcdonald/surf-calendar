@@ -43,15 +43,23 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /© OpenStreetMap contributors/);
   assert.match(html, /Banzai Pipeline/);
   assert.match(html, /Cloudbreak/);
-  assert.equal((html.match(/class="season-cell rating-/g) ?? []).length, 600);
+  assert.equal(
+    (html.match(/class="season-cell season-band-/g) ?? []).length,
+    600,
+  );
   assert.equal((html.match(/class="board-option"/g) ?? []).length, 2);
   assert.equal((html.match(/class="level-filter"/g) ?? []).length, 3);
   assert.equal((html.match(/class="score-key"/g) ?? []).length, 2);
   assert.equal((html.match(/is-current-month-cell/g) ?? []).length, 50);
   assert.equal((html.match(/class="is-current-month"/g) ?? []).length, 1);
   assert.match(html, /I’m riding/);
+  assert.match(html, /Season strength/);
+  assert.match(html, /Lower for spot/);
+  assert.match(html, /Prime for spot/);
+  assert.match(html, /colors do not compare quality between spots/);
   assert.match(html, /Board \+ wave fit 40%/);
-  assert.match(html, />3\.[0-9]<\/button>/);
+  assert.match(html, /data-absolute-score="3\.[0-9]"/);
+  assert.doesNotMatch(html, />[1-5]\.[0-9]<\/button>/);
   assert.doesNotMatch(html, /data-testid="spot-detail"/);
   assert.doesNotMatch(html, /mini-season|month-score/);
   assert.match(html, /<button[^>]*class="season-cell/);
@@ -98,6 +106,7 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.match(surfModel, /consistencyPercent/);
   assert.match(surfModel, /crowdLevel/);
   assert.match(surfModel, /tideFlex/);
+  assert.match(surfModel, /getRelativeSeasonBand/);
   assert.equal((surfModel.match(/: model\(/g) ?? []).length, 50);
   assert.equal((surfData.match(/^ {4}seasonality:/gm) ?? []).length, 50);
   assert.doesNotMatch(surfData, /^ {4}ratings:/m);

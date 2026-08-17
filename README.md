@@ -1,6 +1,6 @@
 # Swell Season
 
-An interactive global surf atlas comparing the seasonality of 50 iconic breaks across 28 countries and territories. The central heatmap recomputes 600 month scores for a shortboard or longboard, balancing board-to-wave fit, clean wind, consistency, tide flexibility, and crowd pressure. A linked world map and transparent per-spot breakdown make every score explorable.
+An interactive global surf atlas comparing the seasonality of 50 iconic breaks across 28 countries and territories. The row-normalized heatmap makes each spot’s seasonal rhythm legible at a glance, while the detail card recomputes its absolute month scores for a shortboard or longboard using board-to-wave fit, clean wind, consistency, tide flexibility, and crowd pressure.
 
 ## Run locally
 
