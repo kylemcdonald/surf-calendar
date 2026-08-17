@@ -43,15 +43,18 @@ test("server-renders the complete surf atlas", async () => {
   assert.match(html, /© OpenStreetMap contributors/);
   assert.match(html, /Banzai Pipeline/);
   assert.match(html, /Cloudbreak/);
-  assert.equal((html.match(/class="season-cell/g) ?? []).length, 600);
+  assert.equal((html.match(/class="season-cell rating-/g) ?? []).length, 600);
+  assert.equal((html.match(/class="board-option"/g) ?? []).length, 2);
   assert.equal((html.match(/class="level-filter"/g) ?? []).length, 3);
   assert.equal((html.match(/class="score-key"/g) ?? []).length, 2);
   assert.equal((html.match(/is-current-month-cell/g) ?? []).length, 50);
   assert.equal((html.match(/class="is-current-month"/g) ?? []).length, 1);
+  assert.match(html, /I’m riding/);
+  assert.match(html, /Board \+ wave fit 40%/);
+  assert.match(html, />3\.[0-9]<\/button>/);
   assert.doesNotMatch(html, /data-testid="spot-detail"/);
-  assert.doesNotMatch(html, /mini-season|month-score|detail-month/);
-  assert.doesNotMatch(html, /<button[^>]*class="season-cell/);
-  assert.doesNotMatch(html, /class="season-cell[^"]*"[^>]*>[1-5]<\/button>/);
+  assert.doesNotMatch(html, /mini-season|month-score/);
+  assert.match(html, /<button[^>]*class="season-cell/);
   assert.doesNotMatch(
     html,
     /Find your next|When every break comes alive|50 breaks, one orbit|How to read the atlas|Regional source library|Back to top|The world view|Select a dot/,
@@ -60,7 +63,16 @@ test("server-renders the complete surf atlas", async () => {
 });
 
 test("ships product data and removes starter preview infrastructure", async () => {
-  const [globals, page, layout, packageJson, surfAtlas, surfData, worldMap] =
+  const [
+    globals,
+    page,
+    layout,
+    packageJson,
+    surfAtlas,
+    surfData,
+    surfModel,
+    worldMap,
+  ] =
     await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
@@ -68,6 +80,7 @@ test("ships product data and removes starter preview infrastructure", async () =
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../app/surf-atlas.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/surf-data.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/surf-model.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/world-map.tsx", import.meta.url), "utf8"),
   ]);
 
@@ -76,10 +89,18 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.doesNotMatch(page, /codex-preview|_sites-preview|SkeletonPreview/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.match(surfAtlas, /www\.google\.com\/maps\/search/);
-  assert.doesNotMatch(
-    surfAtlas,
-    /getSource|Regional source|selectedMonthIndex|is-selected-cell/,
-  );
+  assert.doesNotMatch(surfAtlas, /getSource|Regional source/);
+  assert.match(surfAtlas, /selectedMonthIndex/);
+  assert.match(surfAtlas, /is-selected-cell/);
+  assert.match(surfAtlas, /board-\$\{option\}/);
+  assert.match(surfModel, /Board \+ wave fit/);
+  assert.match(surfModel, /cleanWindPercent/);
+  assert.match(surfModel, /consistencyPercent/);
+  assert.match(surfModel, /crowdLevel/);
+  assert.match(surfModel, /tideFlex/);
+  assert.equal((surfModel.match(/: model\(/g) ?? []).length, 50);
+  assert.equal((surfData.match(/^ {4}seasonality:/gm) ?? []).length, 50);
+  assert.doesNotMatch(surfData, /^ {4}ratings:/m);
   assert.match(globals, /--sea-pale: hsl\(210 67% 85%\)/);
   assert.doesNotMatch(globals, /#075961|#2f8f8a|#88c8bf|#cadfda/);
   assert.match(worldMap, /osm-bright-gl-style\/style-cdn\.json/);

@@ -6,7 +6,7 @@ export const dynamic = "force-static";
 export const metadata: Metadata = {
   title: { absolute: "Swell Season — Global Surf Atlas" },
   description:
-    "Explore 50 iconic surf breaks around the world with month-by-month ratings for swell, weather, and surfer level.",
+    "Compare 50 iconic surf breaks with explainable month-by-month scores that recompute for a shortboard or longboard.",
 };
 
 export default function Home() {

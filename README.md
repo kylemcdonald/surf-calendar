@@ -1,6 +1,6 @@
 # Swell Season
 
-An interactive global surf atlas comparing the seasonality of 50 iconic breaks across 28 countries and territories. The central heatmap gives every spot a 1–5 rating for each month, balancing swell quality with prevailing wind and travel weather. A linked world map and detailed break profile make the data explorable.
+An interactive global surf atlas comparing the seasonality of 50 iconic breaks across 28 countries and territories. The central heatmap recomputes 600 month scores for a shortboard or longboard, balancing board-to-wave fit, clean wind, consistency, tide flexibility, and crowd pressure. A linked world map and transparent per-spot breakdown make every score explorable.
 
 ## Run locally
 
@@ -23,4 +23,4 @@ npm run lint
 
 ## Research
 
-The editorial scoring method and source notes are documented in [RESEARCH.md](RESEARCH.md). Scores describe broad seasonal tendencies, not live conditions or a safety assessment. Always consult a current marine forecast and local experts before surfing.
+The scoring model, research trail, assumptions, and source notes are documented in [RESEARCH.md](RESEARCH.md). Scores describe broad seasonal tendencies, not live conditions or a safety assessment. Always consult a current marine forecast and local experts before surfing.

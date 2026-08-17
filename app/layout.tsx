@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Swell Season",
   },
   description:
-    "A visual month-by-month field guide to 50 of the world’s essential surf breaks.",
+    "A board-aware month-by-month field guide to 50 of the world’s essential surf breaks.",
   icons: {
     icon: `${publicBasePath}/favicon.svg`,
     shortcut: `${publicBasePath}/favicon.svg`,

@@ -87,7 +87,7 @@ export interface SurfSpot {
   seasonNote: string;
   conditions: string;
   caution: string;
-  ratings: readonly [
+  seasonality: readonly [
     Rating,
     Rating,
     Rating,
@@ -357,7 +357,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "North Pacific swell season builds in October, peaks November–February, and fades through April.",
     conditions: "Warm water year-round; winter brings the biggest surf, variable trades, and passing showers.",
     caution: "Expert-only when breaking: shallow reef, violent wipeouts, current, and an elite crowd.",
-    ratings: [5, 5, 4, 3, 2, 1, 1, 1, 2, 3, 4, 5],
+    seasonality: [5, 5, 4, 3, 2, 1, 1, 1, 2, 3, 4, 5],
     sourceId: "hawaii",
   },
   {
@@ -375,7 +375,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Most reliable from November through February, with strong early- and late-season shoulders.",
     conditions: "Warm tropical water offsets winter squalls; summer is pleasant but usually too small for the main break.",
     caution: "Long hold-downs, shifting peaks, heavy current, and a demanding paddle.",
-    ratings: [5, 5, 4, 3, 2, 1, 1, 1, 2, 3, 5, 5],
+    seasonality: [5, 5, 4, 3, 2, 1, 1, 1, 2, 3, 5, 5],
     sourceId: "hawaii",
   },
   {
@@ -393,7 +393,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "South swells favor May–September; winter is smaller on this side of Oʻahu.",
     conditions: "Sunny, warm, and accessible year-round, with the driest feel through the summer season.",
     caution: "Very crowded; mind reef shallows, canoes, swimmers, and right-of-way etiquette.",
-    ratings: [2, 2, 2, 3, 4, 5, 5, 5, 4, 3, 2, 2],
+    seasonality: [2, 2, 2, 3, 4, 5, 5, 5, 4, 3, 2, 2],
     sourceId: "hawaii",
   },
   {
@@ -411,7 +411,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Needs winter north and northwest swells; December–February is the core window.",
     conditions: "Shelter can keep the face clean, while winter fronts bring occasional rain to lush West Maui.",
     caution: "Shallow sections, long paddle, rocks, and a concentrated takeoff crowd.",
-    ratings: [5, 5, 4, 3, 2, 1, 1, 1, 2, 3, 4, 5],
+    seasonality: [5, 5, 4, 3, 2, 1, 1, 1, 2, 3, 4, 5],
     sourceId: "hawaii",
   },
   {
@@ -429,7 +429,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "A rare-event wave centered on November–February rather than an everyday surf option.",
     conditions: "Winter is mild but wind and rain can accompany the systems that create the swell.",
     caution: "Elite big-wave teams only; rescue craft, specialized equipment, and local expertise are essential.",
-    ratings: [5, 5, 4, 2, 1, 1, 1, 1, 1, 2, 4, 5],
+    seasonality: [5, 5, 4, 2, 1, 1, 1, 1, 1, 2, 4, 5],
     sourceId: "hawaii",
   },
   {
@@ -447,7 +447,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "South swells build through spring and summer; late summer and fall often pair swell with clean winds.",
     conditions: "Dry, mild weather dominates; late summer offers the warmest water and fall often brings offshore mornings.",
     caution: "Long walk, intense crowd, and a high standard of lineup awareness.",
-    ratings: [2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 4, 3],
+    seasonality: [2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 4, 3],
     sourceId: "trestles",
   },
   {
@@ -465,7 +465,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Summer south swells are the main event, with May–September the dependable planning window.",
     conditions: "Warm, dry summers and wind protection at First Point make for comfortable long sessions.",
     caution: "Extreme crowding and frequent collisions can make gentle waves deceptively hazardous.",
-    ratings: [2, 2, 2, 3, 4, 5, 5, 5, 5, 4, 3, 2],
+    seasonality: [2, 2, 2, 3, 4, 5, 5, 5, 5, 4, 3, 2],
     sourceId: "malibu",
   },
   {
@@ -483,7 +483,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "The serious window runs November–March, with January and February most dependable.",
     conditions: "Cold water, short winter days, fog, and stormy intervals reward patient swell chasing.",
     caution: "Elite big-wave preparation, flotation, safety team, and local knowledge are mandatory.",
-    ratings: [5, 5, 4, 2, 1, 1, 1, 1, 1, 2, 4, 5],
+    seasonality: [5, 5, 4, 2, 1, 1, 1, 1, 1, 2, 4, 5],
     sourceId: "mavericks",
   },
   {
@@ -501,7 +501,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Fall balances more consistent swell with manageable weather; winter turns powerful and stormy.",
     conditions: "A thick wetsuit is standard year-round; September–October offers the best weather-to-swell compromise.",
     caution: "Rips, drifting peaks, cold water, logs, and winter storm surf demand judgment.",
-    ratings: [2, 2, 3, 4, 4, 3, 3, 3, 4, 5, 4, 3],
+    seasonality: [2, 2, 3, 4, 4, 3, 3, 3, 4, 5, 4, 3],
     sourceId: "tofino",
   },
   {
@@ -519,7 +519,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Northwest swell and the dry season overlap from November through April.",
     conditions: "Warm water and sunny winter weather; summer is hotter, wetter, and less reliable at the town break.",
     caution: "Crowds, rocks near the point, and water quality after heavy rain.",
-    ratings: [5, 5, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5],
+    seasonality: [5, 5, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5],
     sourceId: "sayulita",
   },
   {
@@ -537,7 +537,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "South swells arrive in April and run through October, with May–August the most dependable.",
     conditions: "Water stays warm; peak swell overlaps the humid rainy season, usually with cleaner mornings.",
     caution: "Severe hold-downs, strong current, board-breaking power, and changing sandbars.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 4, 4, 4, 3, 2],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 4, 4, 4, 3, 2],
     sourceId: "mexico",
   },
   {
@@ -555,7 +555,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Southern Hemisphere swells favor late spring through early fall, especially May–September.",
     conditions: "Dry desert weather is a plus; summer can be intensely hot and tropical systems occasionally intrude.",
     caution: "Remote access, limited services, rocks, currents, and long paddles between sections.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
     sourceId: "scorpion-bay",
   },
   {
@@ -573,7 +573,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Dry-season offshore winds favor December–April; south swell keeps it active into the greener months.",
     conditions: "Warm water all year; May–November brings afternoon rain but often productive morning sessions.",
     caution: "Boat access, rips, crocodile habitat near river mouths, and no services on the beach.",
-    ratings: [5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 5],
+    seasonality: [5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 5],
     sourceId: "costa-rica",
   },
   {
@@ -591,7 +591,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "The south-swell engine is strongest April–October, with May–September most consistent.",
     conditions: "Peak waves coincide with the green season: humid, lush, rainy, and generally clean early.",
     caution: "Crowds, rocks, river runoff, long rides followed by long walks, and strong sweep.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
     sourceId: "costa-rica",
   },
   {
@@ -609,7 +609,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "South swells run March–October; spring and early summer offer the strongest balance.",
     conditions: "Warm water year-round; wet-season afternoons can turn stormy while mornings stay offshore.",
     caution: "Shallow reef, current, urchins, and an outer reef that is expert-only when large.",
-    ratings: [3, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3, 3],
+    seasonality: [3, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3, 3],
     sourceId: "nicaragua",
   },
   {
@@ -627,7 +627,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "South Pacific swells begin in March; March–July is strongest, with quality continuing into October.",
     conditions: "Warm water, hot air, and wet-season showers; clean morning winds are the usual target.",
     caution: "Submerged boulders, current, powerful sections, and a competitive takeoff zone.",
-    ratings: [2, 3, 5, 5, 5, 5, 5, 4, 4, 4, 3, 2],
+    seasonality: [2, 3, 5, 5, 5, 5, 5, 4, 4, 4, 3, 2],
     sourceId: "el-salvador",
   },
   {
@@ -645,7 +645,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "North swells favor December–April while Southern Hemisphere energy supports the cooler middle months.",
     conditions: "December–April is warmer and sunnier; June–September is cooler, cloudier, and still wave-rich.",
     caution: "Busy lineups, rocks at the point, and strong currents when swell rises.",
-    ratings: [4, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 4],
+    seasonality: [4, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 4],
     sourceId: "ecuador",
   },
   {
@@ -663,7 +663,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Long-period south and southwest swells are most dependable March–September.",
     conditions: "Little rain, but cool Humboldt Current water, gray winter skies, and persistent wind require rubber.",
     caution: "Strong current, very long paddle, rocks, and fickle size despite the spot’s reputation.",
-    ratings: [2, 2, 4, 5, 5, 5, 5, 5, 5, 4, 3, 2],
+    seasonality: [2, 2, 4, 5, 5, 5, 5, 5, 5, 4, 3, 2],
     sourceId: "chicama",
   },
   {
@@ -681,7 +681,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Southwest swell is strongest April–September; spring and fall soften the winter weather penalty.",
     conditions: "Cold water all year, with wet and chilly midwinter conditions and milder shoulder seasons.",
     caution: "Rock entry, current, cold water, kelp, and major consequences when the outer peaks activate.",
-    ratings: [3, 3, 4, 5, 4, 4, 4, 4, 5, 4, 3, 3],
+    seasonality: [3, 3, 4, 5, 4, 4, 4, 4, 5, 4, 3, 3],
     sourceId: "chile",
   },
   {
@@ -699,7 +699,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Autumn through spring is most consistent, with April–October the broad quality window.",
     conditions: "Winter brings stronger swell and cooler weather; fall and spring offer the friendliest compromise.",
     caution: "Rips, fast-changing sandbars, crowds, and powerful shorebreak on larger days.",
-    ratings: [3, 3, 4, 5, 5, 4, 4, 4, 5, 5, 4, 3],
+    seasonality: [3, 3, 4, 5, 5, 4, 4, 4, 5, 5, 4, 3],
     sourceId: "brazil",
   },
   {
@@ -717,7 +717,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "North Atlantic swell favors November–April; September–October can receive tropical pulses.",
     conditions: "Warm year-round, with drier winter weather and stronger trade winds outside early mornings.",
     caution: "Shallow rock and reef, sea urchins, current, and a steep takeoff when solid.",
-    ratings: [5, 5, 5, 5, 3, 2, 2, 2, 3, 4, 5, 5],
+    seasonality: [5, 5, 5, 5, 3, 2, 2, 2, 3, 4, 5, 5],
     sourceId: "barbados",
   },
   {
@@ -735,7 +735,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "September and October combine returning Atlantic swell with warmer water and better weather.",
     conditions: "Summer is warm but often small and packed; winter is powerful, colder, and storm-prone.",
     caution: "Violent shorebreak, strong rips, changing banks, and extremely competitive peaks.",
-    ratings: [2, 2, 3, 4, 4, 4, 3, 3, 5, 5, 4, 3],
+    seasonality: [2, 2, 3, 4, 4, 4, 3, 3, 5, 5, 4, 3],
     sourceId: "france",
   },
   {
@@ -753,7 +753,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "May–October is the useful travel window; September–October adds swell while retaining warmth.",
     conditions: "Pleasant summers and warm early fall water; winter systems are colder and less forgiving.",
     caution: "Beach disappears at high tide; rocks, crowds, and shifting currents require timing.",
-    ratings: [2, 2, 3, 4, 4, 5, 4, 4, 5, 5, 4, 3],
+    seasonality: [2, 2, 3, 4, 4, 5, 4, 4, 5, 5, 4, 3],
     sourceId: "france",
   },
   {
@@ -771,7 +771,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Autumn is the prime target, with the most reliable window from October into early winter.",
     conditions: "Fall retains some warmth; winter is wetter, colder, and more exposed to storm disruption.",
     caution: "Fickle sandbar, narrow takeoff, strong current, rocks, and heavy crowd pressure.",
-    ratings: [4, 4, 3, 2, 2, 1, 1, 1, 4, 5, 5, 4],
+    seasonality: [4, 4, 3, 2, 2, 1, 1, 1, 4, 5, 5, 4],
     sourceId: "spain",
   },
   {
@@ -789,7 +789,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "September–November is prime, while spring provides a more approachable shoulder window.",
     conditions: "Cool Atlantic water needs a wetsuit; early autumn balances swell, light winds, and sunny weather.",
     caution: "Rocky entry, urchins, current, and heavy crowding on quality days.",
-    ratings: [3, 3, 4, 4, 4, 3, 3, 3, 5, 5, 5, 4],
+    seasonality: [3, 3, 4, 4, 4, 3, 3, 3, 5, 5, 5, 4],
     sourceId: "portugal",
   },
   {
@@ -807,7 +807,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Atlantic swell favors October–March, with October–November the weather-savvy peak.",
     conditions: "Fall is mild; winter delivers size but more wind, rain, and cold-water exposure.",
     caution: "Powerful closeouts, rips, shallow sandbar, and contest-level crowds.",
-    ratings: [4, 4, 4, 3, 2, 2, 2, 2, 4, 5, 5, 5],
+    seasonality: [4, 4, 4, 3, 2, 2, 2, 2, 4, 5, 5, 5],
     sourceId: "portugal",
   },
   {
@@ -825,7 +825,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Autumn is strongest; its shelter keeps winter useful while summer leans smaller and friendlier.",
     conditions: "The Algarve is sunnier than northern Portugal, though Atlantic water stays cool.",
     caution: "Crowds, rips, rocks at the edges, and a shorebreak that intensifies with swell.",
-    ratings: [3, 3, 4, 4, 4, 4, 3, 3, 5, 5, 5, 4],
+    seasonality: [3, 3, 4, 4, 4, 4, 3, 3, 5, 5, 5, 4],
     sourceId: "portugal",
   },
   {
@@ -843,7 +843,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Big-wave alerts cluster October–March, with November–February the core chase window.",
     conditions: "Winter brings the swell and also rain, wind, cold water, and short daylight.",
     caution: "Elite tow and big-wave teams only; huge moving water, jet-ski traffic, and brutal shorebreak.",
-    ratings: [5, 5, 4, 2, 1, 1, 1, 1, 2, 4, 5, 5],
+    seasonality: [5, 5, 4, 2, 1, 1, 1, 1, 2, 4, 5, 5],
     sourceId: "portugal",
   },
   {
@@ -861,7 +861,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "May, June, and September balance waves and weather; autumn adds power as temperatures fall.",
     conditions: "Cold-water gear is normal; summer is busiest and winter can be windy and raw.",
     caution: "Rips, crowds, fast tidal changes, and heavy winter surf.",
-    ratings: [3, 3, 4, 4, 5, 5, 3, 3, 5, 4, 3, 3],
+    seasonality: [3, 3, 4, 4, 5, 5, 3, 3, 5, 4, 3, 3],
     sourceId: "fistral",
   },
   {
@@ -879,7 +879,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "September–November is the standout window; spring offers lighter, friendlier alternatives.",
     conditions: "Cold water and rapidly changing weather year-round; fall is the best balance before deep winter.",
     caution: "Shallow reefs, cold exposure, storm surf, currents, and large tidal ranges.",
-    ratings: [3, 3, 4, 4, 4, 3, 2, 3, 5, 5, 5, 4],
+    seasonality: [3, 3, 4, 4, 4, 3, 2, 3, 5, 5, 5, 4],
     sourceId: "bundoran",
   },
   {
@@ -897,7 +897,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Consistent north Atlantic swell and mild weather overlap October–March.",
     conditions: "Sunny, mild, and comparatively warm in winter; summer is pleasant but often too small.",
     caution: "Rock entry, current, crowds, and fast sections on bigger swells.",
-    ratings: [5, 5, 5, 4, 3, 2, 2, 2, 2, 4, 5, 5],
+    seasonality: [5, 5, 5, 4, 3, 2, 2, 2, 2, 4, 5, 5],
     sourceId: "morocco",
   },
   {
@@ -915,7 +915,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "October–March is most consistent; smaller summer waves can suit learners and longboards.",
     conditions: "Mild, sunny coastal weather is a major draw; north winds are more persistent in summer.",
     caution: "Crowding, rocks near the takeoff, long paddle-backs, and local etiquette.",
-    ratings: [5, 5, 5, 4, 3, 3, 3, 3, 3, 4, 5, 5],
+    seasonality: [5, 5, 5, 4, 3, 3, 3, 3, 3, 4, 5, 5],
     sourceId: "morocco",
   },
   {
@@ -933,7 +933,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "North Atlantic swell favors November–March, with December–February the strongest period.",
     conditions: "Warm air and comfortable water meet dry-season weather during the best surf window.",
     caution: "Boat access, reef, current, urchins, and a small takeoff zone.",
-    ratings: [5, 5, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5],
+    seasonality: [5, 5, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5],
     sourceId: "senegal",
   },
   {
@@ -951,7 +951,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Southern Ocean swell and favorable winds center the season on May–September.",
     conditions: "Peak surf arrives in cool, windy winter weather; a full wetsuit is standard.",
     caution: "Speed, rocks, current, cold water, sharks, and a world-class crowd.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
     sourceId: "jbay",
   },
   {
@@ -969,7 +969,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "The swell window is April–September, with June–August largest but never guaranteed.",
     conditions: "Cold Benguela water, fog, desert wind, and remote exposure make this a strike mission.",
     caution: "Extremely shallow barrels, relentless current, seals, sharks, isolation, and difficult access.",
-    ratings: [1, 1, 2, 4, 5, 5, 5, 5, 4, 2, 1, 1],
+    seasonality: [1, 1, 2, 4, 5, 5, 5, 5, 4, 2, 1, 1],
     sourceId: "skeleton-bay",
   },
   {
@@ -987,7 +987,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Indian Ocean swell and dry-season trade winds favor April–October, especially May–September.",
     conditions: "Warm water, low rainfall, and offshore southeast trades define the main season.",
     caution: "Sharp reef, strong current, cave access, tides, and a packed expert lineup.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3],
     sourceId: "bali",
   },
   {
@@ -1005,7 +1005,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "West-coast conditions are best April–October; wet-season winds and runoff lower reliability.",
     conditions: "Warm water always; the dry season is sunnier and cleaner, while wet season is humid and stormy.",
     caution: "Crowds, reef at some peaks, strong currents, and water quality after rain.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3],
     sourceId: "bali",
   },
   {
@@ -1023,7 +1023,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "The official dry-season target is April–October, peaking across the middle months.",
     conditions: "Warm water, dry weather, and offshore trades align in season; access is expedition-like.",
     caution: "Shallow sharp reef, speed, current, marine life, and limited medical access.",
-    ratings: [1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 4, 2],
+    seasonality: [1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 4, 2],
     sourceId: "g-land",
   },
   {
@@ -1041,7 +1041,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "March–October is dependable, with May–September carrying the most Southern Ocean energy.",
     conditions: "Tropical heat and warm water; dry-season winds vary by local storm and island exposure.",
     caution: "Reef, remote access, boat logistics, infection risk, and crowd pressure on charter days.",
-    ratings: [2, 2, 4, 5, 5, 5, 5, 5, 5, 5, 4, 2],
+    seasonality: [2, 2, 4, 5, 5, 5, 5, 5, 5, 5, 4, 2],
     sourceId: "mentawais",
   },
   {
@@ -1059,7 +1059,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Southern Hemisphere swell is strongest May–September, with useful shoulders on either side.",
     conditions: "Warm water all year; the drier middle months generally offer the cleanest travel window.",
     caution: "Shallow reef, powerful lip, crowds, and limited services beyond the surf village.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2],
     sourceId: "nias",
   },
   {
@@ -1077,7 +1077,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Pacific and typhoon swell peaks September–November; August and early winter form the shoulders.",
     conditions: "Warm water year-round; the prime swell window leads into the rainiest months.",
     caution: "Razor-sharp shallow reef, current, powerful barrels, and intense seasonal crowds.",
-    ratings: [2, 2, 2, 2, 2, 3, 3, 4, 5, 5, 5, 3],
+    seasonality: [2, 2, 2, 2, 2, 3, 3, 4, 5, 5, 5, 3],
     sourceId: "philippines",
   },
   {
@@ -1095,7 +1095,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "The east coast turns on April–October, with June–September the peak season.",
     conditions: "Warm water and mostly dry east-coast weather align while the southwest monsoon affects the opposite coast.",
     caution: "Crowds, rocks at Main Point, wildlife on access roads, heat, and strong midday wind.",
-    ratings: [1, 1, 2, 4, 5, 5, 5, 5, 5, 4, 2, 1],
+    seasonality: [1, 1, 2, 4, 5, 5, 5, 5, 5, 4, 2, 1],
     sourceId: "sri-lanka",
   },
   {
@@ -1113,7 +1113,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "November–March brings the southwest coast’s dry weather and most favorable winds.",
     conditions: "Tropical warmth year-round; monsoon rain and onshore wind dominate the middle of the year.",
     caution: "Reef, urchins, crowds, boat traffic, and runoff after heavy rain.",
-    ratings: [5, 5, 5, 4, 2, 1, 1, 1, 1, 2, 4, 5],
+    seasonality: [5, 5, 5, 4, 2, 1, 1, 1, 1, 2, 4, 5],
     sourceId: "sri-lanka",
   },
   {
@@ -1131,7 +1131,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "April–October is the surf season; June–August has the most swell while shoulder months can be glassier.",
     conditions: "Warm water always; peak swell overlaps the southwest monsoon’s wind and showers.",
     caution: "Private access rules, shallow reef, current, boat transfers, and limited equipment replacement.",
-    ratings: [2, 2, 4, 5, 4, 5, 5, 5, 5, 5, 3, 2],
+    seasonality: [2, 2, 4, 5, 4, 5, 5, 5, 5, 5, 3, 2],
     sourceId: "maldives",
   },
   {
@@ -1149,7 +1149,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Autumn and winter are the broad target: east and southeast swell is most dependable from April–September.",
     conditions: "Warm water and subtropical weather; cyclone-season rain and wind create both opportunity and disruption.",
     caution: "One of surfing’s densest crowds, fast sweep, rock jump, and very high performance level.",
-    ratings: [3, 4, 4, 5, 5, 5, 5, 5, 5, 4, 3, 3],
+    seasonality: [3, 4, 4, 5, 5, 5, 5, 5, 5, 4, 3, 3],
     sourceId: "queensland",
   },
   {
@@ -1167,7 +1167,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Autumn and winter bring the most dependable Southern Ocean swell, led by April–June.",
     conditions: "Cool water, brisk winds, and fast-changing Southern Ocean weather reward full cold-water gear.",
     caution: "Rock shelves, strong current, large swell, cold exposure, and busy event periods.",
-    ratings: [3, 3, 4, 5, 5, 5, 4, 4, 4, 3, 3, 3],
+    seasonality: [3, 3, 4, 5, 5, 5, 4, 4, 4, 3, 3, 3],
     sourceId: "victoria",
   },
   {
@@ -1185,7 +1185,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Winter carries the most raw swell; March–May and September–November offer the best weather-adjusted balance.",
     conditions: "Mediterranean-climate winter brings rain, cool water, and frontal winds; fall is the gentler entry.",
     caution: "Heavy water, reef, currents, isolation between breaks, and sharks.",
-    ratings: [4, 4, 5, 5, 5, 4, 4, 4, 5, 5, 5, 4],
+    seasonality: [4, 4, 5, 5, 5, 4, 4, 4, 5, 5, 5, 4],
     sourceId: "western-australia",
   },
   {
@@ -1203,7 +1203,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Surf is possible year-round; March–May pairs dependable west swell with relatively settled weather.",
     conditions: "A wetsuit is usual; winter is colder and stormier, while summer is warmer but often smaller.",
     caution: "Rock entry, strong sweep, crowds, long paddle, and rapidly changing weather.",
-    ratings: [4, 4, 5, 5, 5, 4, 3, 3, 4, 4, 4, 4],
+    seasonality: [4, 4, 5, 5, 5, 4, 3, 3, 4, 4, 4, 4],
     sourceId: "raglan",
   },
   {
@@ -1221,7 +1221,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Southern Hemisphere swell and the drier season align May–October.",
     conditions: "Warm water year-round; the prime window is less humid and rain-prone than austral summer.",
     caution: "Elite-only shallow reef, extreme lip weight, boat traffic, current, and remote rescue logistics.",
-    ratings: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 2],
+    seasonality: [2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 2],
     sourceId: "tahiti",
   },
   {
@@ -1239,7 +1239,7 @@ export const SURF_SPOTS: SurfSpot[] = [
     seasonNote: "Fijian winter, April–October, delivers the most consistent southwest swell.",
     conditions: "Warm water throughout; stronger trade winds occur in season, with mornings often the target.",
     caution: "Boat-only access, shallow reef, current, powerful swell, and no easy exit.",
-    ratings: [2, 2, 3, 5, 5, 5, 5, 5, 5, 5, 3, 2],
+    seasonality: [2, 2, 3, 5, 5, 5, 5, 5, 5, 5, 3, 2],
     sourceId: "fiji",
   },
 ];
@@ -1255,8 +1255,4 @@ export const REGIONS: Region[] = [
 
 export function getSource(sourceId: SourceId) {
   return SOURCES.find((source) => source.id === sourceId) ?? SOURCES[0];
-}
-
-export function bestMonths(spot: SurfSpot) {
-  return MONTHS.filter((_, index) => spot.ratings[index] === 5);
 }

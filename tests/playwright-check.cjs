@@ -113,8 +113,8 @@ async function run() {
     .waitFor({ state: "visible" });
   assert.equal(await page.locator(".map-marker").count(), 50);
   assert.equal(await page.locator(".season-cell").count(), 600);
-  assert.equal(await page.locator("td.season-cell").count(), 600);
-  assert.equal(await page.locator("button.season-cell").count(), 0);
+  assert.equal(await page.locator("td.season-cell").count(), 0);
+  assert.equal(await page.locator("button.season-cell").count(), 600);
   assert.equal(await page.locator(".season-cell[aria-pressed]").count(), 0);
   assert.equal(await page.locator(".maplibregl-canvas").count(), 1);
   assert.equal(
@@ -190,10 +190,37 @@ async function run() {
     .locator(".matrix-key .score-key")
     .allInnerTexts();
   assert.deepEqual(scoreLabels.map((label) => label.trim()), [
-    "Very poor",
-    "Very good",
+    "Poor fit",
+    "Excellent",
   ]);
   assert.equal(await page.locator(".matrix-key .score-key").count(), 2);
+
+  const boardOptions = page.locator(".board-option");
+  assert.deepEqual(
+    await boardOptions.evaluateAll((buttons) =>
+      buttons.map((button) => button.getAttribute("aria-pressed")),
+    ),
+    ["true", "false"],
+  );
+  const shortboardScores = await page
+    .locator(".season-cell")
+    .allInnerTexts();
+  await page.getByTestId("board-longboard").click();
+  const longboardScores = await page.locator(".season-cell").allInnerTexts();
+  assert.equal(shortboardScores.length, 600);
+  assert.equal(
+    shortboardScores.filter((score, index) => score !== longboardScores[index])
+      .length > 500,
+    true,
+    "Changing boards should recompute nearly all month scores",
+  );
+  assert.deepEqual(
+    await boardOptions.evaluateAll((buttons) =>
+      buttons.map((button) => button.getAttribute("aria-pressed")),
+    ),
+    ["false", "true"],
+  );
+  await page.getByTestId("board-shortboard").click();
 
   const currentMonthIndex = await page.evaluate(() => new Date().getMonth());
   const currentMonthHeader = page.locator("th.is-current-month");
@@ -269,7 +296,7 @@ async function run() {
     .locator(".season-cell")
     .evaluateAll((cells) => cells.map((cell) => cell.innerText.trim()));
   assert.equal(
-    seasonCellText.every((text) => text === ""),
+    seasonCellText.every((text) => /^[1-5]\.\d$/.test(text)),
     true,
   );
   const levelFilters = page.locator(".level-filter");
@@ -400,14 +427,26 @@ async function run() {
       .isVisible(),
     true,
   );
-  assert.equal(await zicatelaDetail.locator(".detail-month").count(), 0);
+  assert.equal(await zicatelaDetail.locator(".detail-month").count(), 12);
   assert.equal(await zicatelaDetail.locator(".month-score").count(), 0);
   assert.equal(await zicatelaDetail.locator(".mini-season").count(), 0);
   assert.equal(
     await zicatelaDetail.locator('[class*="rating-"]').count(),
-    0,
+    12,
   );
-  assert.equal(await zicatelaDetail.getByText(/^[1-5]\/5$/).count(), 0);
+  assert.equal(await zicatelaDetail.locator(".score-factor").count(), 5);
+  assert.equal(
+    await zicatelaDetail.getByText(/ft face · .*s · Steep \/ hollow/).count(),
+    1,
+  );
+  assert.equal(
+    await zicatelaDetail.getByText(/kt AM · .*% clean/).count(),
+    1,
+  );
+  assert.equal(
+    await zicatelaDetail.getByText(/% of days with a surfable window/).count(),
+    1,
+  );
   const detailFontSizes = await zicatelaDetail.evaluate((detail) => ({
     fact: Number.parseFloat(
       getComputedStyle(detail.querySelector(".break-facts dd")).fontSize,
@@ -436,9 +475,32 @@ async function run() {
   assert.equal(zicatelaMapsUrl.searchParams.get("query"), "15.85,-97.056");
   assert.equal(await zicatelaMapsLink.getAttribute("target"), "_blank");
 
+  assert.equal(
+    await zicatelaDetail.evaluate(
+      (detail) => getComputedStyle(detail).position,
+    ),
+    "sticky",
+  );
+  await page.evaluate(() => window.scrollTo(0, 1200));
+  await page.waitForTimeout(100);
+  const firstStickyBounds = await zicatelaDetail.boundingBox();
+  await page.evaluate(() => window.scrollTo(0, 1600));
+  await page.waitForTimeout(100);
+  const secondStickyBounds = await zicatelaDetail.boundingBox();
+  assert.equal(
+    Boolean(
+      firstStickyBounds &&
+        secondStickyBounds &&
+        Math.abs(firstStickyBounds.y - 12) <= 1 &&
+        Math.abs(secondStickyBounds.y - 12) <= 1,
+    ),
+    true,
+    "The desktop spot card should stay pinned at the top while the matrix scrolls",
+  );
+
   assert.equal(await page.locator(".is-selected-row").count(), 1);
   assert.match(await page.locator(".is-selected-row").innerText(), /Zicatela/);
-  assert.equal(await page.locator(".is-selected-cell").count(), 0);
+  assert.equal(await page.locator(".is-selected-cell").count(), 1);
 
   await page.getByRole("button", { name: "Select Cloudbreak, Fiji" }).click();
   assert.equal(
@@ -448,7 +510,7 @@ async function run() {
       .isVisible(),
     true,
   );
-  assert.equal(await page.locator(".is-selected-cell").count(), 0);
+  assert.equal(await page.locator(".is-selected-cell").count(), 1);
   assert.equal(
     await page
       .getByTestId("spot-detail")
@@ -536,6 +598,16 @@ async function run() {
   assert.equal(
     await page.getByTestId("spot-detail").locator(".mini-season").count(),
     0,
+  );
+  assert.equal(
+    await page.getByTestId("spot-detail").locator(".detail-month").count(),
+    12,
+  );
+  assert.equal(
+    await page
+      .getByTestId("spot-detail")
+      .evaluate((detail) => getComputedStyle(detail).position),
+    "static",
   );
   await page.getByTestId("spot-detail").screenshot({
     path: `${outputDirectory}/surf-atlas-mobile-detail.png`,
