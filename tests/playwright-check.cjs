@@ -458,8 +458,17 @@ async function run() {
   assert.equal(await zicatelaDetail.locator(".month-score").count(), 0);
   assert.equal(await zicatelaDetail.locator(".mini-season").count(), 0);
   assert.equal(
-    await zicatelaDetail.locator('[class*="rating-"]').count(),
+    await zicatelaDetail.locator('.detail-month[class*="season-band-"]').count(),
     12,
+  );
+  assert.deepEqual(
+    await zicatelaDetail.locator(".detail-month").evaluateAll((months) =>
+      months.map((month) => month.getAttribute("data-relative-band")),
+    ),
+    await page.locator(".is-selected-row .season-cell").evaluateAll((cells) =>
+      cells.map((cell) => cell.getAttribute("data-relative-band")),
+    ),
+    "The detail month strip should use the same relative colors as the matrix row",
   );
   assert.equal(await zicatelaDetail.locator(".score-factor").count(), 5);
   assert.equal(

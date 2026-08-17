@@ -338,19 +338,27 @@ function SpotDetail({
           className="detail-months"
           role="group"
         >
-          {monthlyProfiles.map((monthProfile) => (
-            <button
-              aria-label={`${monthProfile.month}: ${monthProfile.score.toFixed(1)} out of 5`}
-              aria-pressed={profile.monthIndex === monthProfile.monthIndex}
-              className={`detail-month rating-${monthProfile.band}`}
-              key={monthProfile.month}
-              onClick={() => onSelectMonth(monthProfile.monthIndex)}
-              type="button"
-            >
-              <span>{monthProfile.month}</span>
-              <strong>{monthProfile.score.toFixed(1)}</strong>
-            </button>
-          ))}
+          {monthlyProfiles.map((monthProfile) => {
+            const relativeBand = getRelativeSeasonBand(
+              monthlyProfiles,
+              monthProfile.monthIndex,
+            );
+
+            return (
+              <button
+                aria-label={`${monthProfile.month}: ${monthProfile.score.toFixed(1)} out of 5`}
+                aria-pressed={profile.monthIndex === monthProfile.monthIndex}
+                className={`detail-month season-band-${relativeBand}`}
+                data-relative-band={relativeBand}
+                key={monthProfile.month}
+                onClick={() => onSelectMonth(monthProfile.monthIndex)}
+                type="button"
+              >
+                <span>{monthProfile.month}</span>
+                <strong>{monthProfile.score.toFixed(1)}</strong>
+              </button>
+            );
+          })}
         </div>
 
         <div className="score-factors">

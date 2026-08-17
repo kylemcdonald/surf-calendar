@@ -101,6 +101,7 @@ test("ships product data and removes starter preview infrastructure", async () =
   assert.match(surfAtlas, /selectedMonthIndex/);
   assert.match(surfAtlas, /is-selected-cell/);
   assert.match(surfAtlas, /board-\$\{option\}/);
+  assert.match(surfAtlas, /detail-month season-band-/);
   assert.match(surfModel, /Board \+ wave fit/);
   assert.match(surfModel, /cleanWindPercent/);
   assert.match(surfModel, /consistencyPercent/);
